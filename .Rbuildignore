@@ -1,0 +1,9 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+^cran-comments\.md$
+^NEWS\.md$
+^\.travis\.yml$
+th travis
+^data-raw$
+^buildpackage.R$

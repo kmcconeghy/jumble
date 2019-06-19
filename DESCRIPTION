@@ -1,0 +1,32 @@
+Package: rerandR
+Title: An R Package to perform re-randomization procedures and assess covariate balance
+Description: This package is designed for streamlined re-randomization procedures, including assessing mahalanobis distance for balance.
+Version: 0.0.1.9999
+Date: 2019-06-19
+Authors@R: c(person(given = "Kevin W.", family = "McConeghy", role = c("aut", "cre", "cph"), email = "kevin_mcconeghy@brown.edu"))
+Maintainer: Kevin W. McConeghy <kevin_mcconeghy@brown.edu>
+URL: https://github.com/kmcconeghy/rerandR
+Depends: R (>= 3.6.0),
+  tidyverse
+Imports:
+    dplyr (>= 0.7.4),
+    tidyr(>= 0.7.2),
+    ggplot2,
+    scales(>= 0.5.0),
+    tibble,
+    rlang,
+    broom (>= 0.4.2),
+    magrittr (>= 1.5.0),
+    stats,
+Suggests:
+    microbenchmark,
+    memoise,
+    profr,
+    rmarkdown,
+LazyData: true
+LazyDataCompression: xz
+BugReports: https://github.com/kmcconeghy/rerandR/issues
+License: GPL-3
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1
+Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))

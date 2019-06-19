@@ -1,0 +1,163 @@
+---
+title: "rerandR: mahalanobis distance"
+author: "Kevin W. McConeghy"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rerandR: 01-mahalanobis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: mybib.bib
+---
+
+Welcome to rerandR! This program was written as a companion to academic work performed by researchers at Brown University to conduct re-randomization for cluster-randomized nursing home trials. 
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>")
+options(tibble.print_min = 4L, tibble.print_max = 4L)
+library(tidyverse)
+library(ggplot2)
+library(rerandR)
+```
+
+## Introduction
+
+In this vignette we will explain how to use Mahalanobis distance as a measure of covariate balance between two groups.  
+
+### Example dataset  
+The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: `r ?rerandR::ACTG175`  
+
+#### Load dataset  
+```{r }
+df <- rerandR::ACTG175
+```
+
+## Measure of covariate balance  
+
+Imagine a randomized controlled trial of patients, assigned to treatment A or B. The primary goal is to have singular statistic to describe how closely 'balanced' individuals in group A are to group B. Morgan and Rubin describe the qualities of this statistic which are desirable.[@MorganKL2015] Namely it should be 'affinely invariant'. Which means that an affine transformation of the covariates would lead to the same re-randomization acceptance. This kind of metric will reflect the joint distribution of covariates, and provide equal balance for any linear combination of covariates.  Mahalanobis distance meets these criteria.  
+
+## Mahalanobis distance  
+
+Mahalanobis or M-distance measures the distance between point P and distribution D. It is generally a measure of many standard deviations P is from the mean D.[full description](https://en.wikipedia.org/wiki/Mahalanobis_distance)  
+
+Mahalanobis distance can be used as a scalar measure of multivariate balance using the following formula.[@MorganKL2015]  
+
+$$ M \equiv \frac{n_tn_c}n (\bar{X_t} - \bar{X_c}) ' cov(X)^{-1} (\bar{X_t} - \bar{X_c}) $$
+Where n is the sample size, t treated, c controls, and $$\bar{X}$$ represents the covariate means. 
+
+### Trial Covariate Balance  
+The ACT trial was a single randomized trial, here are the observed mean differences +/- standard deviation in that single randomization.  
+
+```{r, eval=F}
+
+
+df_grp_means <- df %>%
+  select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
+         drugs, karnof, oprior) %>%
+  group_by(arms) %>%
+  summarize_all(., mean) %>%
+  t(.) 
+colnames(df_grp_means) <- c('zido', 'combo')
+
+df_grp_sd <- df %>%
+  select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
+         drugs, karnof, oprior) %>%
+  summarize_all(sd) %>%
+  t(.)
+  
+df_grp_means[, 1] - df_grp_means[, 2] %>%
+  cbind(., df_grp_sd) %>%
+  round(., 4)
+```
+These are the raw mean differences in selected covariates, most are close to zero, but race, msm, drug use have a mean difference ~2 percentage points.  
+
+With large treatment effects this may not be significant, but if evaluating small effects, 2 points could be an important source of confounding.  
+
+### What is the mahalanobis distance for these groups?  
+
+To compute the mahalanobis formula, use must do some matrix algebra.  
+
+### Reduce dataset to needed covariates, format  
+1) Only include treatment indicator and k covarates  
+2) Ensure all covariates are numeric  
+```{r }
+df_mdist <- df %>%
+  select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
+         drugs, karnof, oprior) %>%
+  map_dfr(., as.numeric) 
+```
+
+### Sample size constant  
+
+$$ \frac{n_tn_c}n$$  
+
+This is easy to compute
+```{r }
+ssc <- (nrow(df_mdist[df_mdist$arms==0, ]) * nrow(df_mdist[df_mdist$arms==1, ])) / (nrow(df_mdist))
+
+cat('Sample size constant: ', round(ssc, 3))
+```
+
+### Covariate means  
+
+$$ \bar{X_t} - \bar{X_c}$$  
+
+```{r }
+X_t <- colMeans(df_mdist[df_mdist$arms==0, ])[2:length(df_mdist)]
+
+X_c <- colMeans(df_mdist[df_mdist$arms==1, ])[2:length(df_mdist)]
+
+X_delta <- X_t - X_c 
+
+cat('Difference in covariate means by treatment: \n ', round(X_delta, 3))
+```
+
+### Inverse of covariance of covariate matrix  
+```{r }
+df_cov <- df_mdist %>%
+  select(-arms) %>%
+  cov(.) %>%
+  solve(.) # inverse
+
+round(df_cov, 1)
+```
+
+
+
+### Bring formula together  
+
+$$ M \equiv \frac{n_tn_c}n (\bar{X_t} - \bar{X_c}) ' cov(X)^{-1} (\bar{X_t} - \bar{X_c}) $$
+
+```{r }
+M = ssc * (t(X_delta) %*% (df_cov %*% X_delta))
+
+cat('Manually computed M-distance: ', M)
+```
+
+There is also an R-function which can compute M-distance.  
+```{r }
+cat('R function Mahalanobis: ', mahalanobis(X_t, X_c, cov = df_cov, inverted = T) * ssc)
+```
+Typically you would take the square root of this distance, but that is not necessary for our purposes.  
+
+### Benchmarking  
+Because a limitation of re-randomization is computation time, it is important to have a function which can compute M-distance quickly.  
+
+```{r }
+library(microbenchmark)
+microbenchmark(
+  mine = mdist(df_t, df_c),
+  rbase = {t <- colMeans(df_t) 
+           c <- colMeans(df_c) 
+           covit <- cov(rbind(df_t, df_c))
+           ssc <- (nrow(df_t) * nrow(df_c)) / (nrow(df_t) + nrow(df_c))
+           mahalanobis(t, c, cov = covit) * ssc},
+  times = 1000
+)
+```
+The base-R function is faster than manual but not by a lot.  
+
+# Contacting authors  
+The primary author of the package was Kevin W. McConeghy. [See here](https://github.com/kmcconeghy/)
+
+# References  

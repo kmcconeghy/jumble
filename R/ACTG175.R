@@ -1,0 +1,43 @@
+#' @title  AIDS Clinical Trials Group Study 175
+#'
+#' @description ACTG 175 was a randomized clinical trial to compare monotherapy with zidovudine or didanosine with combination therapy with zidovudine and didanosine or zidovudine and zalcitabine in adults infected with the human immunodeficiency virus type I whose CD4 T cell counts were between 200 and 500 per cubic millimeter. Only two of the study arms are included in this practice dataset.
+#'
+#' @usage data(ACTG175)
+#'
+#' @format A data frame with 2139 rows and 27 variables:
+#'
+#' \describe{
+#'   \item{pidnum}{patient's ID number}
+#'   \item{age}{age in years at baseline}
+#'   \item{wtkg}{weight in kg at baseline}
+#'   \item{hemo}{hemophilia (0=no, 1=yes)}
+#'   \item{msm}{Men who have sex with men (0=no, 1=yes)}
+#'   \item{drugs}{history of intravenous drug use (0=no, 1=yes)}
+#'   \item{karnof}{Karnofsky score (on a scale of 0-100)}
+#'   \item{oprior}{non-zidovudine antiretroviral therapy prior to initiation of study treatment (0=no, 1=yes)}
+#'   \item{z30}{zidovudine use in the 30 days prior to treatment initiation (0=no, 1=yes)}
+#'   \item{zprior}{zidovudine use prior to treatment initiation (0=no, 1=yes)}
+#'   \item{preanti}{number of days of previously received antiretroviral therapy}
+#'   \item{race}{race (0=white, 1=non-white)}
+#'   \item{gender}{gender (0=female, 1=male)}
+#'   \item{str2}{antiretroviral history (0=naive, 1=experienced)}
+#'   \item{strat}{antiretroviral history stratification (1='antiretroviral naive', 2='> 1 but ≤q 52 weeks of prior antiretroviral therapy', 3='> 52 weeks')}
+#'   \item{symptom}{symptomatic indicator (0=asymptomatic, 1=symptomatic)}
+#'   \item{treat}{treatment indicator (0=zidovudine only, 1=other therapies)}
+#'   \item{offtrt}{indicator of off-treatment before 96\pm5 weeks (0=no,1=yes)}
+#'   \item{cd40}{CD4 T cell count at baseline}
+#'   \item{cd420}{CD4 T cell count at 20\pm5 weeks}
+#'   \item{cd496}{CD4 T cell count at 96\pm5 weeks (=NA if missing)}
+#'   \item{r}{missing CD4 T cell count at 96\pm5 weeks (0=missing, 1=observed)}
+#'   \item{cd80}{CD8 T cell count at baseline}
+#'   \item{cd820}{CD8 T cell count at 20 weeks}
+#'   \item{cens}{indicator of observing the event in days}
+#'   \item{days}{number of days until the first occurrence of: (i) a decline in CD4 T cell count of at least 50 (ii) an event indicating progression to AIDS, or (iii) death.}
+#'   \item{arms}{treatment arm (0=zidovudine, 1=zidovudine and didanosine, 2=zidovudine and zalcitabine, 3=didanosine)}
+#' }
+#' @details The variable days contains right-censored time-to-event observations. The data set includes the following post-randomization covariates: CD4 and CD8 T cell count at 20\pm5 weeks and the indicator of whether or not the patient was taken off-treatment before 96\pm5 weeks.
+#'
+#' @references Hammer SM, et al. (1996), "A trial comparing nucleoside monotherapy with combination therapy in HIV-infected adults with CD4 cell counts from 200 to 500 per cubic millimeter.", New England Journal of Medicine, 335: 1081 – 1090.
+#'
+#' @source \url{https://cran.r-project.org/web/packages/speff2trial/index.html}
+"ACTG175"
