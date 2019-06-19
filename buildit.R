@@ -1,10 +1,10 @@
 
-setwd("~/GitHub/flumodelr")
+setwd("~/GitHub/rerandR")
 
 ## Build
 devtools::document()
 pkgbuild::build()
-devtools::test()
+#devtools::test()
 devtools::check()
 
 

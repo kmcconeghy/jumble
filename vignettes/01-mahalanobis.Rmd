@@ -13,8 +13,6 @@ bibliography: mybib.bib
 Welcome to rerandR! This program was written as a companion to academic work performed by researchers at Brown University to conduct re-randomization for cluster-randomized nursing home trials. 
 
 ```{r, echo = FALSE, message = FALSE}
-knitr::opts_chunk$set(collapse = T, comment = "#>")
-options(tibble.print_min = 4L, tibble.print_max = 4L)
 library(tidyverse)
 library(ggplot2)
 library(rerandR)
@@ -25,7 +23,7 @@ library(rerandR)
 In this vignette we will explain how to use Mahalanobis distance as a measure of covariate balance between two groups.  
 
 ### Example dataset  
-The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: `r ?rerandR::ACTG175`  
+The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: ?rerandR::ACTG175 
 
 #### Load dataset  
 ```{r }
@@ -43,7 +41,7 @@ Mahalanobis or M-distance measures the distance between point P and distribution
 Mahalanobis distance can be used as a scalar measure of multivariate balance using the following formula.[@MorganKL2015]  
 
 $$ M \equiv \frac{n_tn_c}n (\bar{X_t} - \bar{X_c}) ' cov(X)^{-1} (\bar{X_t} - \bar{X_c}) $$
-Where n is the sample size, t treated, c controls, and $$\bar{X}$$ represents the covariate means. 
+Where n is the sample size, t treated, c controls, and X represents the covariate means. 
 
 ### Trial Covariate Balance  
 The ACT trial was a single randomized trial, here are the observed mean differences +/- standard deviation in that single randomization.  
@@ -65,9 +63,10 @@ df_grp_sd <- df %>%
   summarize_all(sd) %>%
   t(.)
   
-df_grp_means[, 1] - df_grp_means[, 2] %>%
-  cbind(., df_grp_sd) %>%
-  round(., 4)
+t <- df_grp_means[, 1] - df_grp_means[, 2] %>%
+  bind_cols(mean = ., sd = df_grp_sd) 
+
+t %>% round(., 4)
 ```
 These are the raw mean differences in selected covariates, most are close to zero, but race, msm, drug use have a mean difference ~2 percentage points.  
 
@@ -144,6 +143,14 @@ Typically you would take the square root of this distance, but that is not neces
 Because a limitation of re-randomization is computation time, it is important to have a function which can compute M-distance quickly.  
 
 ```{r }
+df_t <- df[df$arms==1, ] %>%
+  select(age, race, gender, symptom, wtkg, hemo, msm, 
+         drugs, karnof, oprior)
+
+df_c <- df[df$arms==0, ] %>%
+  select(age, race, gender, symptom, wtkg, hemo, msm, 
+         drugs, karnof, oprior) 
+
 library(microbenchmark)
 microbenchmark(
   mine = mdist(df_t, df_c),
