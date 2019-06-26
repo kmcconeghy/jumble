@@ -18,6 +18,7 @@ Imports:
     broom (>= 0.4.2),
     magrittr (>= 1.5.0),
     stats,
+    Rcpp,
 Suggests:
     knitr,
     microbenchmark,

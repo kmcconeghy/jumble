@@ -24,11 +24,11 @@
 #'   \item{strat}{antiretroviral history stratification (1='antiretroviral naive', 2='> 1 but ≤q 52 weeks of prior antiretroviral therapy', 3='> 52 weeks')}
 #'   \item{symptom}{symptomatic indicator (0=asymptomatic, 1=symptomatic)}
 #'   \item{treat}{treatment indicator (0=zidovudine only, 1=other therapies)}
-#'   \item{offtrt}{indicator of off-treatment before 96\pm5 weeks (0=no,1=yes)}
+#'   \item{offtrt}{indicator of off-treatment before 96 +/- 5 weeks (0=no,1=yes)}
 #'   \item{cd40}{CD4 T cell count at baseline}
-#'   \item{cd420}{CD4 T cell count at 20\pm5 weeks}
-#'   \item{cd496}{CD4 T cell count at 96\pm5 weeks (=NA if missing)}
-#'   \item{r}{missing CD4 T cell count at 96\pm5 weeks (0=missing, 1=observed)}
+#'   \item{cd420}{CD4 T cell count at 20 +/- 5 weeks}
+#'   \item{cd496}{CD4 T cell count at 96 +/- 5 weeks (=NA if missing)}
+#'   \item{r}{missing CD4 T cell count at 96 +/- 5 weeks (0=missing, 1=observed)}
 #'   \item{cd80}{CD8 T cell count at baseline}
 #'   \item{cd820}{CD8 T cell count at 20 weeks}
 #'   \item{cens}{indicator of observing the event in days}
@@ -36,8 +36,6 @@
 #'   \item{arms}{treatment arm (0=zidovudine, 1=zidovudine and didanosine, 2=zidovudine and zalcitabine, 3=didanosine)}
 #' }
 #' @details The variable days contains right-censored time-to-event observations. The data set includes the following post-randomization covariates: CD4 and CD8 T cell count at 20\pm5 weeks and the indicator of whether or not the patient was taken off-treatment before 96\pm5 weeks.
-#'
-#' @export
 #'
 #' @references Hammer SM, et al. (1996), "A trial comparing nucleoside monotherapy with combination therapy in HIV-infected adults with CD4 cell counts from 200 to 500 per cubic millimeter.", New England Journal of Medicine, 335: 1081 – 1090.
 #'
