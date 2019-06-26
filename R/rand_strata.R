@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples
-#' require(rerandR)
+#' require(jumble)
 #' rand_strata()
 #'
 rand_strata <- function(df, strata, seed=NULL) {

@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>rerandR: mahalanobis distance • rerandR</title>
+<title>jumble: mahalanobis distance • jumble</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="rerandR: mahalanobis distance">
+<script src="../pkgdown.js"></script><meta property="og:title" content="jumble: mahalanobis distance">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -29,7 +29,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">rerandR</a>
+        <a class="navbar-link" href="../index.html">jumble</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.9999</span>
       </span>
     </div>
@@ -53,10 +53,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/01-mahalanobis.html">rerandR: mahalanobis distance</a>
+      <a href="../articles/01-mahalanobis.html">jumble: mahalanobis distance</a>
     </li>
     <li>
-      <a href="../articles/02-rerand.html">rerandR: Re-randomization approach</a>
+      <a href="../articles/02-rerand.html">jumble: Re-randomization approach</a>
     </li>
   </ul>
 </li>
@@ -66,7 +66,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/kmcconeghy/rerandR">
+  <a href="https://github.com/kmcconeghy/jumble">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -83,19 +83,19 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>rerandR: mahalanobis distance</h1>
+      <h1>jumble: mahalanobis distance</h1>
                         <h4 class="author">Kevin W. McConeghy</h4>
             
-            <h4 class="date">2019-06-19</h4>
+            <h4 class="date">2019-06-26</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/kmcconeghy/rerandR/blob/master/vignettes/01-mahalanobis.Rmd"><code>vignettes/01-mahalanobis.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/kmcconeghy/jumble/blob/master/vignettes/01-mahalanobis.Rmd"><code>vignettes/01-mahalanobis.Rmd</code></a></small>
       <div class="hidden name"><code>01-mahalanobis.Rmd</code></div>
 
     </div>
 
     
     
-<p>Welcome to rerandR! This program was written as a companion to academic work performed by researchers at Brown University to conduct re-randomization for cluster-randomized nursing home trials.</p>
+<p>Welcome to jumble! This program was written as a companion to academic work performed by researchers at Brown University to conduct randomization procedures for cluster-randomized nursing home trials.</p>
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
@@ -103,11 +103,11 @@
 <div id="example-dataset" class="section level3">
 <h3 class="hasAnchor">
 <a href="#example-dataset" class="anchor"></a>Example dataset</h3>
-<p>The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.<span class="citation">(Hammer SM 1996)</span> See: ?rerandR::ACTG175</p>
+<p>The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.<span class="citation">(Hammer SM 1996)</span> See: ?jumble::ACTG175</p>
 <div id="load-dataset" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-dataset" class="anchor"></a>Load dataset</h4>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">df &lt;-<span class="st"> </span>rerandR<span class="op">::</span>ACTG175</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">df &lt;-<span class="st"> </span>jumble<span class="op">::</span>ACTG175</a></code></pre></div>
 </div>
 </div>
 </div>
@@ -122,30 +122,30 @@
 <p>Mahalanobis or M-distance measures the distance between point P and distribution D. It is generally a measure of many standard deviations P is from the mean D.<a href="https://en.wikipedia.org/wiki/Mahalanobis_distance">full description</a></p>
 <p>Mahalanobis distance can be used as a scalar measure of multivariate balance using the following formula.<span class="citation">(Morgan KL 2015)</span></p>
 <p><span class="math display">\[ M \equiv \frac{n_tn_c}n (\bar{X_t} - \bar{X_c}) ' cov(X)^{-1} (\bar{X_t} - \bar{X_c}) \]</span> Where n is the sample size, t treated, c controls, and X represents the covariate means.</p>
+<p>Alternatively, for stratified randomization by a distance measure, you can compute each unit’s distance from the overall group mean.</p>
+<p><span class="math display">\[ M \equiv (x_i - \bar{X}) ' cov(X)^{-1} (\bar{x_i} - \bar{X}) \]</span></p>
 <div id="trial-covariate-balance" class="section level3">
 <h3 class="hasAnchor">
 <a href="#trial-covariate-balance" class="anchor"></a>Trial Covariate Balance</h3>
 <p>The ACT trial was a single randomized trial, here are the observed mean differences +/- standard deviation in that single randomization.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"></a>
-<a class="sourceLine" id="cb2-2" title="2"></a>
-<a class="sourceLine" id="cb2-3" title="3">df_grp_means &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="st">  </span><span class="kw">select</span>(arms, age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb2-5" title="5">         drugs, karnof, oprior) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="st">  </span><span class="kw">group_by</span>(arms) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="st">  </span><span class="kw">summarize_all</span>(., mean) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(.) </a>
-<a class="sourceLine" id="cb2-9" title="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(df_grp_means) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'zido'</span>, <span class="st">'combo'</span>)</a>
-<a class="sourceLine" id="cb2-10" title="10"></a>
-<a class="sourceLine" id="cb2-11" title="11">df_grp_sd &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="st">  </span><span class="kw">select</span>(arms, age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb2-13" title="13">         drugs, karnof, oprior) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-14" title="14"><span class="st">  </span><span class="kw">summarize_all</span>(sd) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-15" title="15"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(.)</a>
-<a class="sourceLine" id="cb2-16" title="16">  </a>
-<a class="sourceLine" id="cb2-17" title="17">t &lt;-<span class="st"> </span>df_grp_means[, <span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>df_grp_means[, <span class="dv">2</span>] <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-18" title="18"><span class="st">  </span><span class="kw">bind_cols</span>(<span class="dt">mean =</span> ., <span class="dt">sd =</span> df_grp_sd) </a>
-<a class="sourceLine" id="cb2-19" title="19"></a>
-<a class="sourceLine" id="cb2-20" title="20">t <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(., <span class="dv">4</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">df_grp_means &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="st">  </span><span class="kw">select</span>(arms, age, race, gender, symptom, wtkg, hemo, msm, </a>
+<a class="sourceLine" id="cb2-3" title="3">         drugs, karnof, oprior) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="st">  </span><span class="kw">group_by</span>(arms) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="st">  </span><span class="kw">summarize_all</span>(., mean) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(.) </a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(df_grp_means) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'zido'</span>, <span class="st">'combo'</span>)</a>
+<a class="sourceLine" id="cb2-8" title="8"></a>
+<a class="sourceLine" id="cb2-9" title="9">df_grp_sd &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="st">  </span><span class="kw">select</span>(arms, age, race, gender, symptom, wtkg, hemo, msm, </a>
+<a class="sourceLine" id="cb2-11" title="11">         drugs, karnof, oprior) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-12" title="12"><span class="st">  </span><span class="kw">summarize_all</span>(sd) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(.)</a>
+<a class="sourceLine" id="cb2-14" title="14">  </a>
+<a class="sourceLine" id="cb2-15" title="15">t &lt;-<span class="st"> </span>df_grp_means[, <span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>df_grp_means[, <span class="dv">2</span>] <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-16" title="16"><span class="st">  </span><span class="kw">bind_cols</span>(<span class="dt">mean =</span> ., <span class="dt">sd =</span> df_grp_sd) </a>
+<a class="sourceLine" id="cb2-17" title="17"></a>
+<a class="sourceLine" id="cb2-18" title="18">t <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(., <span class="dv">4</span>)</a></code></pre></div>
 <p>These are the raw mean differences in selected covariates, most are close to zero, but race, msm, drug use have a mean difference ~2 percentage points.</p>
 <p>With large treatment effects this may not be significant, but if evaluating small effects, 2 points could be an important source of confounding.</p>
 </div>
@@ -174,83 +174,83 @@
 <p>This is easy to compute</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">ssc &lt;-<span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, ]) <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, ])) <span class="op">/</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_mdist))</a>
 <a class="sourceLine" id="cb4-2" title="2"></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'Sample size constant: '</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(ssc, <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="co">#&gt; Sample size constant:  263.476</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'Sample size constant: '</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(ssc, <span class="dv">3</span>))</a></code></pre></div>
+<pre><code>## Sample size constant:  263.476</code></pre>
 </div>
 <div id="covariate-means" class="section level3">
 <h3 class="hasAnchor">
 <a href="#covariate-means" class="anchor"></a>Covariate means</h3>
 <p><span class="math display">\[ \bar{X_t} - \bar{X_c}\]</span></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">X_t &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, ])[<span class="dv">2</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(df_mdist)]</a>
-<a class="sourceLine" id="cb5-2" title="2"></a>
-<a class="sourceLine" id="cb5-3" title="3">X_c &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, ])[<span class="dv">2</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(df_mdist)]</a>
-<a class="sourceLine" id="cb5-4" title="4"></a>
-<a class="sourceLine" id="cb5-5" title="5">X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="st"> </span>X_c </a>
-<a class="sourceLine" id="cb5-6" title="6"></a>
-<a class="sourceLine" id="cb5-7" title="7"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'Difference in covariate means by treatment: </span><span class="ch">\n</span><span class="st"> '</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(X_delta, <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb5-8" title="8"><span class="co">#&gt; Difference in covariate means by treatment: </span></a>
-<a class="sourceLine" id="cb5-9" title="9"><span class="co">#&gt;   -0.004 0.029 -0.019 -0.017 1.191 -0.003 -0.022 -0.021 -0.104 0.013</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">X_t &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, ])[<span class="dv">2</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(df_mdist)]</a>
+<a class="sourceLine" id="cb6-2" title="2"></a>
+<a class="sourceLine" id="cb6-3" title="3">X_c &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, ])[<span class="dv">2</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(df_mdist)]</a>
+<a class="sourceLine" id="cb6-4" title="4"></a>
+<a class="sourceLine" id="cb6-5" title="5">X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="st"> </span>X_c </a>
+<a class="sourceLine" id="cb6-6" title="6"></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'Difference in covariate means by treatment: </span><span class="ch">\n</span><span class="st"> '</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(X_delta, <span class="dv">3</span>))</a></code></pre></div>
+<pre><code>## Difference in covariate means by treatment: 
+##   -0.004 0.029 -0.019 -0.017 1.191 -0.003 -0.022 -0.021 -0.104 0.013</code></pre>
 </div>
 <div id="inverse-of-covariance-of-covariate-matrix" class="section level3">
 <h3 class="hasAnchor">
 <a href="#inverse-of-covariance-of-covariate-matrix" class="anchor"></a>Inverse of covariance of covariate matrix</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">df_cov &lt;-<span class="st"> </span>df_mdist <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>arms) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(.) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-4" title="4"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/solve">solve</a></span>(.) <span class="co"># inverse</span></a>
-<a class="sourceLine" id="cb6-5" title="5"></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(df_cov, <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb6-7" title="7"><span class="co">#&gt;         age race gender symptom wtkg hemo  msm drugs karnof oprior</span></a>
-<a class="sourceLine" id="cb6-8" title="8"><span class="co">#&gt; age     0.0  0.0    0.0     0.0  0.0  0.1  0.0   0.0    0.0    0.0</span></a>
-<a class="sourceLine" id="cb6-9" title="9"><span class="co">#&gt; race    0.0  5.9    0.0     0.2  0.0  2.6  2.3   0.1    0.0   -0.9</span></a>
-<a class="sourceLine" id="cb6-10" title="10"><span class="co">#&gt; gender  0.0  0.0   14.9     0.0 -0.1 -9.1 -9.2  -0.9    0.0   -1.1</span></a>
-<a class="sourceLine" id="cb6-11" title="11"><span class="co">#&gt; symptom 0.0  0.2    0.0     7.1  0.0  0.2 -0.6  -0.2    0.0   -0.4</span></a>
-<a class="sourceLine" id="cb6-12" title="12"><span class="co">#&gt; wtkg    0.0  0.0   -0.1     0.0  0.0  0.0  0.0   0.0    0.0    0.0</span></a>
-<a class="sourceLine" id="cb6-13" title="13"><span class="co">#&gt; hemo    0.1  2.6   -9.1     0.2  0.0 24.0 10.5   3.0    0.0   -0.8</span></a>
-<a class="sourceLine" id="cb6-14" title="14"><span class="co">#&gt; msm     0.0  2.3   -9.2    -0.6  0.0 10.5 12.5   2.9    0.0    0.2</span></a>
-<a class="sourceLine" id="cb6-15" title="15"><span class="co">#&gt; drugs   0.0  0.1   -0.9    -0.2  0.0  3.0  2.9  10.0    0.0    0.9</span></a>
-<a class="sourceLine" id="cb6-16" title="16"><span class="co">#&gt; karnof  0.0  0.0    0.0     0.0  0.0  0.0  0.0   0.0    0.0    0.1</span></a>
-<a class="sourceLine" id="cb6-17" title="17"><span class="co">#&gt; oprior  0.0 -0.9   -1.1    -0.4  0.0 -0.8  0.2   0.9    0.1   43.8</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">df_cov &lt;-<span class="st"> </span>df_mdist <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>arms) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(.) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/solve">solve</a></span>(.) <span class="co"># inverse</span></a>
+<a class="sourceLine" id="cb8-5" title="5"></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(df_cov, <span class="dv">1</span>)</a></code></pre></div>
+<pre><code>##         age race gender symptom wtkg hemo  msm drugs karnof oprior
+## age     0.0  0.0    0.0     0.0  0.0  0.1  0.0   0.0    0.0    0.0
+## race    0.0  5.9    0.0     0.2  0.0  2.6  2.3   0.1    0.0   -0.9
+## gender  0.0  0.0   14.9     0.0 -0.1 -9.1 -9.2  -0.9    0.0   -1.1
+## symptom 0.0  0.2    0.0     7.1  0.0  0.2 -0.6  -0.2    0.0   -0.4
+## wtkg    0.0  0.0   -0.1     0.0  0.0  0.0  0.0   0.0    0.0    0.0
+## hemo    0.1  2.6   -9.1     0.2  0.0 24.0 10.5   3.0    0.0   -0.8
+## msm     0.0  2.3   -9.2    -0.6  0.0 10.5 12.5   2.9    0.0    0.2
+## drugs   0.0  0.1   -0.9    -0.2  0.0  3.0  2.9  10.0    0.0    0.9
+## karnof  0.0  0.0    0.0     0.0  0.0  0.0  0.0   0.0    0.0    0.1
+## oprior  0.0 -0.9   -1.1    -0.4  0.0 -0.8  0.2   0.9    0.1   43.8</code></pre>
 </div>
 <div id="bring-formula-together" class="section level3">
 <h3 class="hasAnchor">
 <a href="#bring-formula-together" class="anchor"></a>Bring formula together</h3>
 <p><span class="math display">\[ M \equiv \frac{n_tn_c}n (\bar{X_t} - \bar{X_c}) ' cov(X)^{-1} (\bar{X_t} - \bar{X_c}) \]</span></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">M =<span class="st"> </span>ssc <span class="op">*</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(X_delta) <span class="op">%*%</span><span class="st"> </span>(df_cov <span class="op">%*%</span><span class="st"> </span>X_delta))</a>
-<a class="sourceLine" id="cb7-2" title="2"></a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'Manually computed M-distance: '</span>, M)</a>
-<a class="sourceLine" id="cb7-4" title="4"><span class="co">#&gt; Manually computed M-distance:  8.542155</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">M =<span class="st"> </span>ssc <span class="op">*</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(X_delta) <span class="op">%*%</span><span class="st"> </span>(df_cov <span class="op">%*%</span><span class="st"> </span>X_delta))</a>
+<a class="sourceLine" id="cb10-2" title="2"></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'Manually computed M-distance: '</span>, M)</a></code></pre></div>
+<pre><code>## Manually computed M-distance:  8.542155</code></pre>
 <p>There is also an R-function which can compute M-distance.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'R function Mahalanobis: '</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/mahalanobis">mahalanobis</a></span>(X_t, X_c, <span class="dt">cov =</span> df_cov, <span class="dt">inverted =</span> T) <span class="op">*</span><span class="st"> </span>ssc)</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="co">#&gt; R function Mahalanobis:  8.542155</span></a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'R function Mahalanobis: '</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/mahalanobis">mahalanobis</a></span>(X_t, X_c, <span class="dt">cov =</span> df_cov, <span class="dt">inverted =</span> T) <span class="op">*</span><span class="st"> </span>ssc)</a></code></pre></div>
+<pre><code>## R function Mahalanobis:  8.542155</code></pre>
 <p>Typically you would take the square root of this distance, but that is not necessary for our purposes.</p>
 </div>
 <div id="benchmarking" class="section level3">
 <h3 class="hasAnchor">
 <a href="#benchmarking" class="anchor"></a>Benchmarking</h3>
 <p>Because a limitation of re-randomization is computation time, it is important to have a function which can compute M-distance quickly.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">df_t &lt;-<span class="st"> </span>df[df<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, ] <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="st">  </span><span class="kw">select</span>(age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb9-3" title="3">         drugs, karnof, oprior)</a>
-<a class="sourceLine" id="cb9-4" title="4"></a>
-<a class="sourceLine" id="cb9-5" title="5">df_c &lt;-<span class="st"> </span>df[df<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, ] <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="st">  </span><span class="kw">select</span>(age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb9-7" title="7">         drugs, karnof, oprior) </a>
-<a class="sourceLine" id="cb9-8" title="8"></a>
-<a class="sourceLine" id="cb9-9" title="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(microbenchmark)</a>
-<a class="sourceLine" id="cb9-10" title="10"><span class="kw">microbenchmark</span>(</a>
-<a class="sourceLine" id="cb9-11" title="11">  <span class="dt">mine =</span> <span class="kw"><a href="../reference/mdist.html">mdist</a></span>(df_t, df_c),</a>
-<a class="sourceLine" id="cb9-12" title="12">  <span class="dt">rbase =</span> {t &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_t) </a>
-<a class="sourceLine" id="cb9-13" title="13">           c &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_c) </a>
-<a class="sourceLine" id="cb9-14" title="14">           covit &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(df_t, df_c))</a>
-<a class="sourceLine" id="cb9-15" title="15">           ssc &lt;-<span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_t) <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_c)) <span class="op">/</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_t) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_c))</a>
-<a class="sourceLine" id="cb9-16" title="16">           <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/mahalanobis">mahalanobis</a></span>(t, c, <span class="dt">cov =</span> covit) <span class="op">*</span><span class="st"> </span>ssc},</a>
-<a class="sourceLine" id="cb9-17" title="17">  <span class="dt">times =</span> <span class="dv">1000</span></a>
-<a class="sourceLine" id="cb9-18" title="18">)</a>
-<a class="sourceLine" id="cb9-19" title="19"><span class="co">#&gt; Unit: microseconds</span></a>
-<a class="sourceLine" id="cb9-20" title="20"><span class="co">#&gt;   expr     min      lq     mean   median       uq      max neval</span></a>
-<a class="sourceLine" id="cb9-21" title="21"><span class="co">#&gt;   mine 916.869 978.550 1137.164 1011.479 1117.217 7083.588  1000</span></a>
-<a class="sourceLine" id="cb9-22" title="22"><span class="co">#&gt;  rbase 862.608 919.188 1105.936  954.203 1067.361 9051.354  1000</span></a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">df_t &lt;-<span class="st"> </span>df[df<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, ] <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="st">  </span><span class="kw">select</span>(age, race, gender, symptom, wtkg, hemo, msm, </a>
+<a class="sourceLine" id="cb14-3" title="3">         drugs, karnof, oprior)</a>
+<a class="sourceLine" id="cb14-4" title="4"></a>
+<a class="sourceLine" id="cb14-5" title="5">df_c &lt;-<span class="st"> </span>df[df<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, ] <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="st">  </span><span class="kw">select</span>(age, race, gender, symptom, wtkg, hemo, msm, </a>
+<a class="sourceLine" id="cb14-7" title="7">         drugs, karnof, oprior) </a>
+<a class="sourceLine" id="cb14-8" title="8"></a>
+<a class="sourceLine" id="cb14-9" title="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(microbenchmark)</a>
+<a class="sourceLine" id="cb14-10" title="10"><span class="kw">microbenchmark</span>(</a>
+<a class="sourceLine" id="cb14-11" title="11">  <span class="dt">mine =</span> <span class="kw"><a href="../reference/mdist.html">mdist</a></span>(df_t, df_c),</a>
+<a class="sourceLine" id="cb14-12" title="12">  <span class="dt">rbase =</span> {t &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_t) </a>
+<a class="sourceLine" id="cb14-13" title="13">           c &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_c) </a>
+<a class="sourceLine" id="cb14-14" title="14">           covit &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(df_t, df_c))</a>
+<a class="sourceLine" id="cb14-15" title="15">           ssc &lt;-<span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_t) <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_c)) <span class="op">/</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_t) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_c))</a>
+<a class="sourceLine" id="cb14-16" title="16">           <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/mahalanobis">mahalanobis</a></span>(t, c, <span class="dt">cov =</span> covit) <span class="op">*</span><span class="st"> </span>ssc},</a>
+<a class="sourceLine" id="cb14-17" title="17">  <span class="dt">times =</span> <span class="dv">1000</span></a>
+<a class="sourceLine" id="cb14-18" title="18">)</a></code></pre></div>
+<pre><code>## Unit: microseconds
+##   expr     min       lq     mean   median       uq      max neval
+##   mine 936.348 1196.754 2117.270 1777.390 2265.042 16458.65  1000
+##  rbase 909.913 1136.231 2202.658 1716.173 2199.419 37898.17  1000</code></pre>
 <p>The base-R function is faster than manual but not by a lot.</p>
 </div>
 </div>

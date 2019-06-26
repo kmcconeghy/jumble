@@ -1,5 +1,5 @@
 
-setwd("~/GitHub/rerandR")
+setwd("~/GitHub/jumble")
 
 ## Build
 devtools::document()

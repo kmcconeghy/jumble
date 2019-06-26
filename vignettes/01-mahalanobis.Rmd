@@ -1,21 +1,21 @@
 ---
-title: "rerandR: mahalanobis distance"
+title: "jumble: mahalanobis distance"
 author: "Kevin W. McConeghy"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{rerandR: 01-mahalanobis}
+  %\VignetteIndexEntry{jumble: 01-mahalanobis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: mybib.bib
 ---
 
-Welcome to rerandR! This program was written as a companion to academic work performed by researchers at Brown University to conduct re-randomization for cluster-randomized nursing home trials. 
+Welcome to jumble! This program was written as a companion to academic work performed by researchers at Brown University to conduct randomization procedures for cluster-randomized nursing home trials. 
 
 ```{r, echo = FALSE, message = FALSE}
 library(tidyverse)
 library(ggplot2)
-library(rerandR)
+library(jumble)
 ```
 
 ## Introduction
@@ -23,11 +23,11 @@ library(rerandR)
 In this vignette we will explain how to use Mahalanobis distance as a measure of covariate balance between two groups.  
 
 ### Example dataset  
-The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: ?rerandR::ACTG175 
+The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: ?jumble::ACTG175 
 
 #### Load dataset  
 ```{r }
-df <- rerandR::ACTG175
+df <- jumble::ACTG175
 ```
 
 ## Measure of covariate balance  
@@ -43,12 +43,14 @@ Mahalanobis distance can be used as a scalar measure of multivariate balance usi
 $$ M \equiv \frac{n_tn_c}n (\bar{X_t} - \bar{X_c}) ' cov(X)^{-1} (\bar{X_t} - \bar{X_c}) $$
 Where n is the sample size, t treated, c controls, and X represents the covariate means. 
 
+Alternatively, for stratified randomization by a distance measure, you can compute each unit's distance from the overall group mean.  
+
+$$ M \equiv (x_i - \bar{X}) ' cov(X)^{-1} (\bar{x_i} - \bar{X}) $$
+
 ### Trial Covariate Balance  
 The ACT trial was a single randomized trial, here are the observed mean differences +/- standard deviation in that single randomization.  
 
 ```{r, eval=F}
-
-
 df_grp_means <- df %>%
   select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
          drugs, karnof, oprior) %>%

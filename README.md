@@ -1,4 +1,6 @@
-﻿shuffle: An R Package to perform stratified and re-randomization procedures and assess covariate balance
+<img src="jumble_hexasticker.jpg" title="hex sticker thumb" alt="jumble" style="display: block; align="right" width="565" height="382" />
+
+jumble: An R Package to perform stratified and re-randomization procedures and assess covariate balance
 ===============
 
 # Overview  
@@ -7,12 +9,12 @@ This package is practical companion to the published work of statisticians such 
 # Installation  
 ```{r, eval=F}
 # install from CRAN: (Not implemented yet)
-install.packages("rerandR")
+install.packages("jumble")
 ```
 # Or the the development version from GitHub:
 # install.packages("devtools")
 ```{r, eval=F}
-devtools::install_github("kmcconeghy/rerandR")
+devtools::install_github("kmcconeghy/jumble")
 ```
 This package relies heavily on the suite of packages and programming termed "Tidyverse", and "data.table" e.g. that must be installed for proper functioning.  
 
@@ -28,7 +30,7 @@ vignette("01-mahalanobis", "rerand")
 # Latest Version Updates  
 This package is in the early stages of development. Many features may change in a short amount of time.  
 
-# Future Goals for shuffle  
+# Future Goals for jumble  
 - Allow for arbitrary number of treatment groups
 - Expand balance measures beyond Mahalanobis
 

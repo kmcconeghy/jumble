@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>mdist: Fast calculation for covariate balance using Mahalanobis distance of two datasets — mdist • rerandR</title>
+<title>mdist: Fast calculation for covariate balance using Mahalanobis distance of two datasets — mdist • jumble</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -62,7 +62,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">rerandR</a>
+        <a class="navbar-link" href="../index.html">jumble</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.9999</span>
       </span>
     </div>
@@ -86,10 +86,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/01-mahalanobis.html">rerandR: mahalanobis distance</a>
+      <a href="../articles/01-mahalanobis.html">jumble: mahalanobis distance</a>
     </li>
     <li>
-      <a href="../articles/02-rerand.html">rerandR: Re-randomization approach</a>
+      <a href="../articles/02-rerand.html">jumble: Re-randomization approach</a>
     </li>
   </ul>
 </li>
@@ -100,7 +100,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/kmcconeghy/rerandR">
+  <a href="https://github.com/kmcconeghy/jumble">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -118,7 +118,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>mdist: Fast calculation for covariate balance using Mahalanobis distance of two datasets</h1>
-    <small class="dont-index">Source: <a href='https://github.com/kmcconeghy/rerandR/blob/master/R/mdist.R'><code>R/mdist.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/kmcconeghy/jumble/blob/master/R/mdist.R'><code>R/mdist.R</code></a></small>
     <div class="hidden name"><code>mdist.Rd</code></div>
     </div>
 
@@ -149,8 +149,8 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>require</a></span>(<span class='no'>rerandR</span>)
-<span class='no'>df_t</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>rerandR</span><span class='kw ns'>::</span><span class='no'>ATCG175</span>[<span class='no'>ATCG175</span>$<span class='no'>arms</span><span class='kw'>==</span><span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'age'</span>, <span class='st'>'gender'</span>, <span class='st'>'race'</span>, <span class='st'>'msm'</span>)]</div><div class='output co'>#&gt; <span class='error'>Error: 'ATCG175' is not an exported object from 'namespace:rerandR'</span></div><div class='input'><span class='no'>df_c</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>rerandR</span><span class='kw ns'>::</span><span class='no'>ATCG175</span>[<span class='no'>ATCG175</span>$<span class='no'>arms</span><span class='kw'>==</span><span class='fl'>0</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'age'</span>, <span class='st'>'gender'</span>, <span class='st'>'race'</span>, <span class='st'>'msm'</span>)]</div><div class='output co'>#&gt; <span class='error'>Error: 'ATCG175' is not an exported object from 'namespace:rerandR'</span></div><div class='input'>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>require</a></span>(<span class='no'>jumble</span>)
+<span class='no'>df_t</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>jumble</span><span class='kw ns'>::</span><span class='no'>ATCG175</span>[<span class='no'>ATCG175</span>$<span class='no'>arms</span><span class='kw'>==</span><span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'age'</span>, <span class='st'>'gender'</span>, <span class='st'>'race'</span>, <span class='st'>'msm'</span>)]</div><div class='output co'>#&gt; <span class='error'>Error: 'ATCG175' is not an exported object from 'namespace:jumble'</span></div><div class='input'><span class='no'>df_c</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>jumble</span><span class='kw ns'>::</span><span class='no'>ATCG175</span>[<span class='no'>ATCG175</span>$<span class='no'>arms</span><span class='kw'>==</span><span class='fl'>0</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'age'</span>, <span class='st'>'gender'</span>, <span class='st'>'race'</span>, <span class='st'>'msm'</span>)]</div><div class='output co'>#&gt; <span class='error'>Error: 'ATCG175' is not an exported object from 'namespace:jumble'</span></div><div class='input'>
 <span class='fu'>mdist</span>(<span class='no'>df_t</span>, <span class='no'>df_c</span>)</div><div class='output co'>#&gt; <span class='error'>Error in nrow(x_t): object 'df_t' not found</span></div><div class='input'>
 </div></pre>
   </div>

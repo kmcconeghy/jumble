@@ -1,21 +1,21 @@
 ---
-title: "rerandR: Re-randomization approach"
+title: "jumble: Re-randomization approach"
 author: "Kevin W. McConeghy"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{rerandR: 02-rerand}
+  %\VignetteIndexEntry{jumble: 02-rerand}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: mybib.bib
 ---
 
-Welcome to rerandR! This program was written as a companion to academic work performed by researchers at Brown University to conduct re-randomization for cluster-randomized nursing home trials. 
+Welcome to jumble! This program was written as a companion to academic work performed by researchers at Brown University to conduct re-randomization for cluster-randomized nursing home trials. 
 
 ```{r, echo = FALSE, message = FALSE}
 library(tidyverse)
 library(ggplot2)
-library(rerandR)
+library(jumble)
 ```
 
 ## Introduction
@@ -35,11 +35,11 @@ In this vignette we will explain how to use covariate balance as criteria for re
   6) Perform inference (using a randomization test that follows exactly steps 2-4).  
 
 ### Example dataset  
-The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: ?rerandR::ACTG175
+The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: ?jumble::ACTG175
 
 #### Load dataset  
 ```{r }
-df <- rerandR::ACTG175
+df <- jumble::ACTG175
 ```
 
 ## Measure of covariate balance  

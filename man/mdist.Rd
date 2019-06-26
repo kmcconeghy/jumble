@@ -18,9 +18,9 @@ a numeric vector of length one, the M-distance multiplied by a constance for sam
 This function will compute M-distance for two datasets by covariate means
 }
 \examples{
-require(rerandR)
-df_t <- rerandR::ATCG175[ATCG175$arms==1, c('age', 'gender', 'race', 'msm')]
-df_c <- rerandR::ATCG175[ATCG175$arms==0, c('age', 'gender', 'race', 'msm')]
+require(jumble)
+df_t <- jumble::ATCG175[ATCG175$arms==1, c('age', 'gender', 'race', 'msm')]
+df_c <- jumble::ATCG175[ATCG175$arms==0, c('age', 'gender', 'race', 'msm')]
 
 mdist(df_t, df_c)
 
