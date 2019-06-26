@@ -1,11 +1,11 @@
-Package: rerandR
-Title: An R Package to perform re-randomization procedures and assess covariate balance
-Description: This package is designed for streamlined re-randomization procedures, including assessing mahalanobis distance for balance.
+Package: shuffle
+Title: An R Package to perform different randomization procedures and assess covariate balance
+Description: This package is designed for streamlined stratified and re-randomization procedures, including assessing mahalanobis distance for balance.
 Version: 0.0.1.9999
 Date: 2019-06-19
 Authors@R: c(person(given = "Kevin W.", family = "McConeghy", role = c("aut", "cre", "cph"), email = "kevin_mcconeghy@brown.edu"))
 Maintainer: Kevin W. McConeghy <kevin_mcconeghy@brown.edu>
-URL: https://github.com/kmcconeghy/rerandR
+URL: https://github.com/kmcconeghy/shuffle
 Depends: R (>= 3.6.0),
   tidyverse
 Imports:
@@ -26,7 +26,7 @@ Suggests:
     rmarkdown,
 LazyData: true
 LazyDataCompression: xz
-BugReports: https://github.com/kmcconeghy/rerandR/issues
+BugReports: https://github.com/kmcconeghy/shuffle/issues
 License: GPL-3
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1

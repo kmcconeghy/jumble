@@ -1,4 +1,4 @@
-rerandR: An R Package to perform re-randomization procedures and assess covariate balance
+﻿shuffle: An R Package to perform stratified and re-randomization procedures and assess covariate balance
 ===============
 
 # Overview  
@@ -22,13 +22,13 @@ Interested users should have a cohort of trial subjects to use with this package
 # Vignettes  
 Companion documents have been written to assist interested readers with the background and use of the package. 
 ```{r, eval=F}
-vignette("01-mahalanobis", "rerandR")
+vignette("01-mahalanobis", "rerand")
 ```
 
 # Latest Version Updates  
 This package is in the early stages of development. Many features may change in a short amount of time.  
 
-# Future Goals for rerandR  
+# Future Goals for shuffle  
 - Allow for arbitrary number of treatment groups
 - Expand balance measures beyond Mahalanobis
 
