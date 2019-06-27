@@ -1,5 +1,4 @@
 
-setwd("~/GitHub/jumble")
 library(tidyverse)
 library(jumble)
 
