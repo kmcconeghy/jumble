@@ -2,9 +2,9 @@
 % Please edit documentation in R/rand_strata.R
 \name{rand_strata}
 \alias{rand_strata}
-\title{rand_strata: Random assignment by strata}
+\title{rnd_strata: Random assignment by strata}
 \usage{
-rand_strata(df, strata, seed)
+rnd_strata(df, strata, seed)
 }
 \arguments{
 \item{df}{a dataframe, containing strata variable}
@@ -20,7 +20,5 @@ dataframe with new column assigning treatment
 Take a dataset and assign treatment by a specified stratum
 }
 \examples{
-require(jumble)
-rand_strata()
 
 }

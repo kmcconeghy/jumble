@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • jumble</title>
+<title>mdis_grps: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets — mdis_grps • jumble</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="mdis_grps: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets — mdis_grps" />
+
+<meta property="og:description" content="This function will compute M-distance for two datasets by covariate means" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -115,78 +118,56 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>mdis_grps: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kmcconeghy/jumble/blob/master/R/mdis_rman.R'><code>R/mdis_rman.R</code></a></small>
+    <div class="hidden name"><code>mdis_grps.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>This function will compute M-distance for two datasets by covariate means</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="ACTG175.html">ACTG175</a></code> </p>
-        </td>
-        <td><p>AIDS Clinical Trials Group Study 175</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="mdis_chrt.html">mdis_chrt()</a></code> </p>
-        </td>
-        <td><p>mdis_chrt: Matrix algebra in base R for covariate balance using Mahalanobis distance of a point to its distribution</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="mdis_grps.html">mdis_grps()</a></code> </p>
-        </td>
-        <td><p>mdis_grps: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="mdis_rbase.html">mdis_rbase()</a></code> </p>
-        </td>
-        <td><p>mdis_rbase: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rand_strata.html">rnd_strata()</a></code> </p>
-        </td>
-        <td><p>rnd_strata: Random assignment by strata</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rnd_allot.html">rnd_allot()</a></code> </p>
-        </td>
-        <td><p>rnd_allot: Random allotment into one of two groups of equal sample size</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rnd_assign.html">rnd_assign()</a></code> </p>
-        </td>
-        <td><p>rnd_assign: Randomly assign one unit into one of K groups</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>mdis_grps</span>(<span class='no'>x_t</span>, <span class='no'>x_c</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x_t</th>
+      <td><p>a dataframe or matrix class object, all numeric</p></td>
+    </tr>
+    <tr>
+      <th>x_c</th>
+      <td><p>a dataframe or matrix class object, all numeric</p></td>
+    </tr>
     </table>
-  </div>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>a numeric vector of length one, the M-distance multiplied by a constance for sample size</p>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>require</a></span>(<span class='no'>jumble</span>)
+<span class='no'>df_t</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>jumble</span><span class='kw ns'>::</span><span class='no'><a href='https://www.rdocumentation.org/packages/jumble/topics/ACTG175'>ACTG175</a></span>[<span class='no'>ACTG175</span>$<span class='no'>arms</span><span class='kw'>==</span><span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'age'</span>, <span class='st'>'gender'</span>, <span class='st'>'race'</span>, <span class='st'>'msm'</span>)]
+<span class='no'>df_c</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>jumble</span><span class='kw ns'>::</span><span class='no'><a href='https://www.rdocumentation.org/packages/jumble/topics/ACTG175'>ACTG175</a></span>[<span class='no'>ACTG175</span>$<span class='no'>arms</span><span class='kw'>==</span><span class='fl'>0</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'age'</span>, <span class='st'>'gender'</span>, <span class='st'>'race'</span>, <span class='st'>'msm'</span>)]
+
+<span class='fu'>mdis_grps</span>(<span class='no'>df_t</span>, <span class='no'>df_c</span>)</div><div class='output co'>#&gt; [1] 0.00539505</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 

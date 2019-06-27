@@ -35,7 +35,7 @@
 #'   \item{days}{number of days until the first occurrence of: (i) a decline in CD4 T cell count of at least 50 (ii) an event indicating progression to AIDS, or (iii) death.}
 #'   \item{arms}{treatment arm (0=zidovudine, 1=zidovudine and didanosine, 2=zidovudine and zalcitabine, 3=didanosine)}
 #' }
-#' @details The variable days contains right-censored time-to-event observations. The data set includes the following post-randomization covariates: CD4 and CD8 T cell count at 20\pm5 weeks and the indicator of whether or not the patient was taken off-treatment before 96\pm5 weeks.
+#' @details The variable days contains right-censored time-to-event observations. The data set includes the following post-randomization covariates: CD4 and CD8 T cell count at 20+/-5 weeks and the indicator of whether or not the patient was taken off-treatment before 96+/-5 weeks.
 #'
 #' @references Hammer SM, et al. (1996), "A trial comparing nucleoside monotherapy with combination therapy in HIV-infected adults with CD4 cell counts from 200 to 500 per cubic millimeter.", New England Journal of Medicine, 335: 1081 – 1090.
 #'

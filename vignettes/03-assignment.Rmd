@@ -1,0 +1,198 @@
+---
+title: "jumble: Random assignment"
+author: "Kevin W. McConeghy"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{jumble: 03-assignment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: mybib.bib
+---
+
+Welcome to jumble! This program was written as a companion to academic work performed by researchers at Brown University to conduct re-randomization for cluster-randomized nursing home trials. 
+
+```{r, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(ggplot2)
+library(jumble)
+```
+
+## Introduction
+
+In this vignette we demonstrate some functions used for random assignment, following best practices outlined by other R packages like randomizeR, randomizr etc.  
+
+  1) Randomization must be transparent
+  2) Randomization must be reproducibile
+  3) Randomization must be random!
+
+### Example dataset  
+The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: ?jumble::ACTG175
+
+#### Load dataset  
+```{r }
+df <- jumble::ACTG175
+```
+
+## Random assignment to K-groups  
+Assigning treatment is easy if you want equal probability of assignment to one or more groups, without concern to final sample size in each arm, covariate balance etc.  
+
+```{r }
+assign <- rnd_assign(df$pidnum, 2, as.integer(as.Date('2019-06-26')))
+
+head(assign)
+```
+Truly random assignment!  
+
+The seed is stored as a attribute  
+```{r }
+seed_iter <- attr(assign, 'seed')
+```
+```{r, echo=F}
+paste0('Randomization performed: ', Sys.Date(), ' Seed: ', seed_iter)
+```
+
+Don't lose that information!  As long as you know the seed you can reproduce the randomization:  
+```{r }
+assign <- rnd_assign(df$pidnum, 2, seed_iter)
+
+head(assign)
+```
+
+### Simulation to demonstrate equal probability  
+Perform 20,000 randomizations  
+```{r }
+pidnum <- df$pidnum  
+
+n=20000L
+
+df_assign <- lapply(1:n, function(x) rnd_assign(pidnum, 2, 18073L+x))
+
+assigns <- bind_cols(df_assign[[1]][, 1], 
+                     lapply(df_assign, function(x) x[, 2]))
+
+df_assign_2 <- gather(assigns, key = 'trial', value = 'group', 
+                      starts_with('group')) %>%
+  group_by(id) %>%
+  summarize(`No. of trials` = n,
+            `No. group 'a'` = sum(group == 'a'),
+            `No. group 'b'` = sum(group == 'b'),
+            `Prob. group = 'a'` = `No. group 'a'` / n(),
+            `Prob. group = 'b'` = `No. group 'b'` / n())
+
+head(df_assign_2)
+```
+First glance shows ~ equal likelihood of group assignment in 20,000 trials. 
+### Assignment tests  
+```{r, echo=F}
+ggplot(df_assign_2, aes(x = `Prob. group = 'a'`,
+                        y = `Prob. group = 'b'`)) +
+  geom_violin( colour = 'blue') +
+  scale_x_continuous(limits = c(0.47, 0.53)) +
+  scale_y_continuous(limits = c(0.47, 0.53)) +
+  labs(title="Probability of treatment assignment", 
+       subtitle="K=2; completely random assignment; 20,000 trials",
+       x="Pr | Group A",
+       y="Pr | Group B")
+
+```
+
+For any given individual, across 20,000 trials no assignment exceeds an imbalance of ~2-3%.  
+
+```{r, echo=F}
+cat("Probability of assignment to group 'a' in 20,000 trials \n")
+summary(df_assign_2$`Prob. group = 'a'`)
+cat("Probability of assignment to group 'b' in 20,000 trials \n")
+summary(df_assign_2$`Prob. group = 'b'`)
+```
+
+However, in each trial the number of individuals in group A vs. B was random and could be imbalanced.  
+
+```{r }
+df_trials <- gather(assigns, key = 'trial', value = 'group', 
+                      starts_with('group')) %>%
+  group_by(trial) %>%
+  summarize(`No. group 'a'` = sum(group == 'a'),
+            `No. group 'b'` = sum(group == 'b'))
+```
+
+```{r, echo=F}
+cat("No. assigned to group 'a' in 20,000 trials \n")
+summary(df_trials$`No. group 'a'`)
+cat("No assigned to group 'b' in 20,000 trials \n")
+summary(df_trials$`No. group 'b'`)
+```
+
+See how the number assigned varies widely?  
+
+what if you want to guarantee an equal number of individuals are in each group?  
+
+### Random assignment to K-groups, equal sample size  
+We will repeat the exercise, dropping one person to make an odd-numbered cohort.  
+```{r }
+pidnum <- df$pidnum 
+pidnum <- pidnum[2:length(pidnum)] # drop 1 
+
+n=10000
+
+df_assign <- lapply(1:n, function(x) rnd_allot(pidnum, 18073L+x))
+
+assigns <- bind_cols(df_assign[[1]][, 1], 
+                     lapply(df_assign, function(x) x[, 2]))
+
+df_assign_2 <- gather(assigns, key = 'trial', value = 'group', 
+                      starts_with('group')) %>%
+  group_by(id) %>%
+  summarize(`No. of trials` = n,
+            `No. group 'a'` = sum(group == 'a'),
+            `No. group 'b'` = sum(group == 'b'),
+            `Prob. group = 'a'` = `No. group 'a'` / n(),
+            `Prob. group = 'b'` = `No. group 'b'` / n())
+
+head(df_assign_2)
+```
+
+### Assignment tests  
+```{r, echo=F}
+ggplot(df_assign_2, aes(x = `Prob. group = 'a'`,
+                        y = `Prob. group = 'b'`)) +
+  geom_violin( colour = 'blue') +
+  scale_x_continuous(limits = c(0.47, 0.53)) +
+  scale_y_continuous(limits = c(0.47, 0.53)) +
+  labs(title="Probability of treatment assignment", 
+       subtitle="K=2; completely random assignment; 20,000 trials",
+       x="Pr | Group A",
+       y="Pr | Group B")
+
+```
+
+Random assignment looks well-balanced between groups.  
+
+```{r, echo=F}
+cat("Probability of assignment to group 'a' in 20,000 trials \n")
+summary(df_assign_2$`Prob. group = 'a'`)
+cat("Probability of assignment to group 'b' in 20,000 trials \n")
+summary(df_assign_2$`Prob. group = 'b'`)
+```
+
+```{r }
+df_trials <- gather(assigns, key = 'trial', value = 'group', 
+                      starts_with('group')) %>%
+  group_by(trial) %>%
+  summarize(`No. group 'a'` = sum(group == 'a'),
+            `No. group 'b'` = sum(group == 'b'))
+```
+
+What about the size of the groups?  
+```{r, echo=F}
+cat("No. assigned to group 'a' in 20,000 trials \n")
+summary(df_trials$`No. group 'a'`)
+cat("No assigned to group 'b' in 20,000 trials \n")
+summary(df_trials$`No. group 'b'`)
+```
+Equal size!  The number now randomly goes between 526 or 527 for either the 'a' or 'b' group. The imbalance is selected with equal probability.  
+
+# Contacting authors  
+The primary author of the package was Kevin W. McConeghy. [See here](https://github.com/kmcconeghy/)
+
+# References  

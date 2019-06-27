@@ -1,8 +1,8 @@
-#' @title rand_strata: Random assignment by strata
+#' @title rnd_strata: Random assignment by strata
 #'
 #' @description Take a dataset and assign treatment by a specified stratum
 #'
-#' @usage rand_strata(df, strata, seed)
+#' @usage rnd_strata(df, strata, seed)
 #'
 #' @param df a dataframe, containing strata variable
 #'
@@ -15,8 +15,6 @@
 #' @export
 #'
 #' @examples
-#' require(jumble)
-#' rand_strata()
 #'
 rand_strata <- function(df, strata, seed=NULL) {
 

@@ -86,10 +86,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/01-mahalanobis.html">jumble: mahalanobis distance</a>
+      <a href="../articles/01-mahalanobis.html">jumble: Mahalanobis distance</a>
     </li>
     <li>
       <a href="../articles/02-rerand.html">jumble: Re-randomization approach</a>
+    </li>
+    <li>
+      <a href="../articles/03-assignment.html">jumble: Random assignment</a>
     </li>
   </ul>
 </li>
@@ -151,11 +154,11 @@
 <dt>strat</dt><dd><p>antiretroviral history stratification (1='antiretroviral naive', 2='&gt; 1 but ≤q 52 weeks of prior antiretroviral therapy', 3='&gt; 52 weeks')</p></dd>
 <dt>symptom</dt><dd><p>symptomatic indicator (0=asymptomatic, 1=symptomatic)</p></dd>
 <dt>treat</dt><dd><p>treatment indicator (0=zidovudine only, 1=other therapies)</p></dd>
-<dt>offtrt</dt><dd><p>indicator of off-treatment before 965 weeks (0=no,1=yes)</p></dd>
+<dt>offtrt</dt><dd><p>indicator of off-treatment before 96 +/- 5 weeks (0=no,1=yes)</p></dd>
 <dt>cd40</dt><dd><p>CD4 T cell count at baseline</p></dd>
-<dt>cd420</dt><dd><p>CD4 T cell count at 205 weeks</p></dd>
-<dt>cd496</dt><dd><p>CD4 T cell count at 965 weeks (=NA if missing)</p></dd>
-<dt>r</dt><dd><p>missing CD4 T cell count at 965 weeks (0=missing, 1=observed)</p></dd>
+<dt>cd420</dt><dd><p>CD4 T cell count at 20 +/- 5 weeks</p></dd>
+<dt>cd496</dt><dd><p>CD4 T cell count at 96 +/- 5 weeks (=NA if missing)</p></dd>
+<dt>r</dt><dd><p>missing CD4 T cell count at 96 +/- 5 weeks (0=missing, 1=observed)</p></dd>
 <dt>cd80</dt><dd><p>CD8 T cell count at baseline</p></dd>
 <dt>cd820</dt><dd><p>CD8 T cell count at 20 weeks</p></dd>
 <dt>cens</dt><dd><p>indicator of observing the event in days</p></dd>
@@ -169,7 +172,7 @@
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The variable days contains right-censored time-to-event observations. The data set includes the following post-randomization covariates: CD4 and CD8 T cell count at 205 weeks and the indicator of whether or not the patient was taken off-treatment before 965 weeks.</p>
+    <p>The variable days contains right-censored time-to-event observations. The data set includes the following post-randomization covariates: CD4 and CD8 T cell count at 20+/-5 weeks and the indicator of whether or not the patient was taken off-treatment before 96+/-5 weeks.</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 

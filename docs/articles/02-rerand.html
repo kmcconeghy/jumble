@@ -53,10 +53,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/01-mahalanobis.html">jumble: mahalanobis distance</a>
+      <a href="../articles/01-mahalanobis.html">jumble: Mahalanobis distance</a>
     </li>
     <li>
       <a href="../articles/02-rerand.html">jumble: Re-randomization approach</a>
+    </li>
+    <li>
+      <a href="../articles/03-assignment.html">jumble: Random assignment</a>
     </li>
   </ul>
 </li>
@@ -86,7 +89,7 @@
       <h1>jumble: Re-randomization approach</h1>
                         <h4 class="author">Kevin W. McConeghy</h4>
             
-            <h4 class="date">2019-06-26</h4>
+            <h4 class="date">2019-06-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/kmcconeghy/jumble/blob/master/vignettes/02-rerand.Rmd"><code>vignettes/02-rerand.Rmd</code></a></small>
       <div class="hidden name"><code>02-rerand.Rmd</code></div>
@@ -127,34 +130,19 @@
 <div id="trial-covariate-balance" class="section level3">
 <h3 class="hasAnchor">
 <a href="#trial-covariate-balance" class="anchor"></a>Trial Covariate Balance</h3>
-<p>The ACT trial was a single randomized trial, here are the observed mean differences +/- standard deviation in that single randomization.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">df_grp_means &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="st">  </span><span class="kw">select</span>(arms, age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb2-3" title="3">         drugs, karnof, oprior) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="st">  </span><span class="kw">group_by</span>(arms) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-5" title="5"><span class="st">  </span><span class="kw">summarize_all</span>(., mean) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(.) </a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(df_grp_means) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'zido'</span>, <span class="st">'combo'</span>)</a>
-<a class="sourceLine" id="cb2-8" title="8"></a>
-<a class="sourceLine" id="cb2-9" title="9">df_grp_sd &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-10" title="10"><span class="st">  </span><span class="kw">select</span>(arms, age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb2-11" title="11">         drugs, karnof, oprior) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="st">  </span><span class="kw">summarize_all</span>(sd) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-13" title="13"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(.)</a>
-<a class="sourceLine" id="cb2-14" title="14">  </a>
-<a class="sourceLine" id="cb2-15" title="15">t &lt;-<span class="st"> </span>df_grp_means[, <span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>df_grp_means[, <span class="dv">2</span>] <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-16" title="16"><span class="st">  </span><span class="kw">bind_cols</span>(<span class="dt">mean =</span> ., <span class="dt">sd =</span> df_grp_sd) </a>
-<a class="sourceLine" id="cb2-17" title="17"></a>
-<a class="sourceLine" id="cb2-18" title="18">t <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(., <span class="dv">4</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">df_t &lt;-<span class="st"> </span>df[df<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, ] <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="st">  </span><span class="kw">select</span>(age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb3-3" title="3">         drugs, karnof, oprior)</a>
-<a class="sourceLine" id="cb3-4" title="4"></a>
-<a class="sourceLine" id="cb3-5" title="5">df_c &lt;-<span class="st"> </span>df[df<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, ] <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="st">  </span><span class="kw">select</span>(age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb3-7" title="7">         drugs, karnof, oprior) </a>
-<a class="sourceLine" id="cb3-8" title="8"></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'The M-distance for this trial, estimated using patient characteristics is:  </span><span class="ch">\n</span><span class="st">'</span>, <span class="kw"><a href="../reference/mdist.html">mdist</a></span>(df_t, df_c))</a></code></pre></div>
+<p>The ACT trial was a single randomized trial, here are the observed standardized mean differences in that single randomization (difference in group means / pooled standard deviation).</p>
+<pre><code>##            [,1]
+## arms    -1.9991
+## age     -0.0005
+## race     0.0643
+## gender  -0.0506
+## symptom -0.0437
+## wtkg     0.0887
+## hemo    -0.0126
+## msm     -0.0459
+## drugs   -0.0639
+## karnof  -0.0177
+## oprior   0.0843</code></pre>
 <pre><code>## The M-distance for this trial, estimated using patient characteristics is:  
 ##  8.542155</code></pre>
 <p>But is this a good or bad randomization? How to get some context:</p>
@@ -168,12 +156,10 @@
 <h3 class="hasAnchor">
 <a href="#m-distance---chi-sq-" class="anchor"></a>M-distance - Chi-sq.</h3>
 <p>Using guidance from Morgan &amp; Rubin paper, an acceptance probability of 0.001 is a reasonable starting point.<span class="citation">(Morgan KL 2015)</span> This is saying that we would like to find a M-distance cut-off which represents the lower 0.1% of the distribution of M (i.e. the most balanced randomization draws).</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">k &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(df_t) <span class="co">#number of covariates, degrees of freedom</span></a>
-<a class="sourceLine" id="cb5-2" title="2">Pa &lt;-<span class="st"> </span><span class="fl">0.001</span></a>
-<a class="sourceLine" id="cb5-3" title="3"></a>
-<a class="sourceLine" id="cb5-4" title="4">chi_val &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Chisquare">qchisq</a></span>(<span class="fl">0.001</span>, k)</a>
-<a class="sourceLine" id="cb5-5" title="5"></a>
-<a class="sourceLine" id="cb5-6" title="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="st">'M-distance cut-off using 10 covariates is:</span><span class="ch">\n</span><span class="st"> '</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(chi_val,<span class="dv">2</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">k &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(df_t) <span class="co">#number of covariates, degrees of freedom</span></a>
+<a class="sourceLine" id="cb4-2" title="2">Pa &lt;-<span class="st"> </span><span class="fl">0.001</span></a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4">chi_val &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Chisquare">qchisq</a></span>(<span class="fl">0.001</span>, k)</a></code></pre></div>
 <pre><code>## M-distance cut-off using 10 covariates is:
 ##   1.48</code></pre>
 </div>
@@ -181,33 +167,35 @@
 <h3 class="hasAnchor">
 <a href="#m-distance---empirical-distribution" class="anchor"></a>M-distance - empirical distribution</h3>
 <p>Here we perform a Permutation with 10,000 simulations, where randomly assign individuals to treatment group. We then compute the M-statistic and store the value.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">permute_m &lt;-<span class="st"> </span><span class="cf">function</span>(df) {</a>
-<a class="sourceLine" id="cb7-2" title="2">  </a>
-<a class="sourceLine" id="cb7-3" title="3">  df_<span class="dv">2</span> &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb7-4" title="4"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">arms =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df), <span class="dv">1</span>, <span class="fl">0.5</span>)) <span class="co">#fair coin assigment</span></a>
-<a class="sourceLine" id="cb7-5" title="5">  </a>
-<a class="sourceLine" id="cb7-6" title="6">  df_t &lt;-<span class="st"> </span>df_<span class="dv">2</span>[df_<span class="dv">2</span><span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, ] <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb7-7" title="7"><span class="st">    </span><span class="kw">select</span>(age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb7-8" title="8">         drugs, karnof, oprior)</a>
-<a class="sourceLine" id="cb7-9" title="9"></a>
-<a class="sourceLine" id="cb7-10" title="10">  df_c &lt;-<span class="st"> </span>df_<span class="dv">2</span>[df_<span class="dv">2</span><span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, ] <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb7-11" title="11"><span class="st">    </span><span class="kw">select</span>(age, race, gender, symptom, wtkg, hemo, msm, </a>
-<a class="sourceLine" id="cb7-12" title="12">         drugs, karnof, oprior)</a>
-<a class="sourceLine" id="cb7-13" title="13">  </a>
-<a class="sourceLine" id="cb7-14" title="14">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(<span class="kw"><a href="../reference/mdist.html">mdist</a></span>(df_t, df_c))</a>
-<a class="sourceLine" id="cb7-15" title="15">}</a>
-<a class="sourceLine" id="cb7-16" title="16"></a>
-<a class="sourceLine" id="cb7-17" title="17">sims &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">replicate</a></span>(<span class="dt">n=</span><span class="dv">10000</span>, <span class="kw">permute_m</span>(df))</a></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">label &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(<span class="st">'Pa, 0.001 = '</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/quantile">quantile</a></span>(sims, <span class="fl">0.001</span>), <span class="dv">4</span>))</a>
-<a class="sourceLine" id="cb8-2" title="2">sims <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="st">  </span><span class="kw">tibble</span>(<span class="dt">x=</span>.) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="st">  </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x=</span>x)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">color =</span> <span class="st">'darkblue'</span>, <span class="dt">fill =</span> <span class="st">'lightblue'</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-6" title="6"><span class="st">    </span><span class="kw">geom_vline</span>(<span class="kw">aes</span>(<span class="dt">xintercept=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/quantile">quantile</a></span>(sims, <span class="fl">0.001</span>)),</a>
-<a class="sourceLine" id="cb8-7" title="7">            <span class="dt">color=</span><span class="st">"blue"</span>, <span class="dt">linetype=</span><span class="st">"dashed"</span>, <span class="dt">size=</span><span class="dv">1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-8" title="8"><span class="st">    </span><span class="kw">annotate</span>(<span class="st">"text"</span>, <span class="dt">x =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/quantile">quantile</a></span>(sims, <span class="fl">0.975</span>), <span class="dt">y =</span> <span class="dv">500</span>, <span class="dt">label=</span>label) </a></code></pre></div>
-<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="02-rerand_files/figure-html/unnamed-chunk-7-1.png" width="700"> The empirical distribution suggests an acceptance probability of 0.001 is seen at M values of 1.36 or lower.</p>
+<p>Assignment done using rnd_allot function, <code><a href="../reference/rnd_allot.html">?rnd_allot</a></code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">permute_m &lt;-<span class="st"> </span><span class="cf">function</span>(df, vars, seed) {</a>
+<a class="sourceLine" id="cb6-2" title="2">  </a>
+<a class="sourceLine" id="cb6-3" title="3">  id &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df)</a>
+<a class="sourceLine" id="cb6-4" title="4">  </a>
+<a class="sourceLine" id="cb6-5" title="5">  assign &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rnd_allot.html">rnd_allot</a></span>(id, seed)</a>
+<a class="sourceLine" id="cb6-6" title="6">  </a>
+<a class="sourceLine" id="cb6-7" title="7">  df_<span class="dv">2</span> &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">arms =</span> assign<span class="op">$</span>group) <span class="co">#fair coin assignment</span></a>
+<a class="sourceLine" id="cb6-9" title="9">  </a>
+<a class="sourceLine" id="cb6-10" title="10">  df_t &lt;-<span class="st"> </span>df_<span class="dv">2</span>[df_<span class="dv">2</span><span class="op">$</span>arms<span class="op">==</span><span class="st">'a'</span>, vars] </a>
+<a class="sourceLine" id="cb6-11" title="11"></a>
+<a class="sourceLine" id="cb6-12" title="12">  df_c &lt;-<span class="st"> </span>df_<span class="dv">2</span>[df_<span class="dv">2</span><span class="op">$</span>arms<span class="op">==</span><span class="st">'b'</span>, vars] </a>
+<a class="sourceLine" id="cb6-13" title="13">  </a>
+<a class="sourceLine" id="cb6-14" title="14">  ssc &lt;-<span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_c) <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_t)) <span class="op">/</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(<span class="kw">bind_rows</span>(df_t, df_c))) <span class="co"># sample size correction</span></a>
+<a class="sourceLine" id="cb6-15" title="15"></a>
+<a class="sourceLine" id="cb6-16" title="16">  df_cov &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(df[, vars]) </a>
+<a class="sourceLine" id="cb6-17" title="17">  </a>
+<a class="sourceLine" id="cb6-18" title="18">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(Rfast<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/Rfast/topics/mahala">mahala</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_t), <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_c), <span class="dt">sigma =</span> df_cov) <span class="op">*</span><span class="st"> </span>ssc)</a>
+<a class="sourceLine" id="cb6-19" title="19">}</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">m_vars &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'age'</span>, <span class="st">'race'</span>, <span class="st">'gender'</span>, <span class="st">'symptom'</span>, <span class="st">'wtkg'</span>, <span class="st">'hemo'</span>, <span class="st">'msm'</span>, </a>
+<a class="sourceLine" id="cb7-2" title="2">         <span class="st">'drugs'</span>, <span class="st">'karnof'</span>, <span class="st">'oprior'</span>)</a>
+<a class="sourceLine" id="cb7-3" title="3"></a>
+<a class="sourceLine" id="cb7-4" title="4">seed_list &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/integer">as.integer</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Sys.time">Sys.Date</a></span>()) <span class="op">+</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span>10000L </a>
+<a class="sourceLine" id="cb7-5" title="5"></a>
+<a class="sourceLine" id="cb7-6" title="6">sims &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">sapply</a></span>(seed_list, <span class="cf">function</span>(x) <span class="kw">permute_m</span>(df, m_vars, x)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/unlist">unlist</a></span>(.)</a></code></pre></div>
+<p><img src="02-rerand_files/figure-html/unnamed-chunk-9-1.png" width="576"></p>
+<p>We can see from the empirical distribution that M ~ 8 is about average for achieving balance. So the trial had a decent randomization but it could have been better, the empirical distribution suggests an acceptance probability of 0.001 is seen at M values of 1.3548 or lower.</p>
 <p>At this point we have completed steps 1-3, we have our entire cohort, a list of covariates, and a defined criterion for accepting a randomization.<br>
 Now we must conduct the re-randomization procedure…</p>
 </div>

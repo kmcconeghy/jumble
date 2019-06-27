@@ -45,7 +45,7 @@ data(ACTG175)
 ACTG 175 was a randomized clinical trial to compare monotherapy with zidovudine or didanosine with combination therapy with zidovudine and didanosine or zidovudine and zalcitabine in adults infected with the human immunodeficiency virus type I whose CD4 T cell counts were between 200 and 500 per cubic millimeter. Only two of the study arms are included in this practice dataset.
 }
 \details{
-The variable days contains right-censored time-to-event observations. The data set includes the following post-randomization covariates: CD4 and CD8 T cell count at 20\pm5 weeks and the indicator of whether or not the patient was taken off-treatment before 96\pm5 weeks.
+The variable days contains right-censored time-to-event observations. The data set includes the following post-randomization covariates: CD4 and CD8 T cell count at 20+/-5 weeks and the indicator of whether or not the patient was taken off-treatment before 96+/-5 weeks.
 }
 \references{
 Hammer SM, et al. (1996), "A trial comparing nucleoside monotherapy with combination therapy in HIV-infected adults with CD4 cell counts from 200 to 500 per cubic millimeter.", New England Journal of Medicine, 335: 1081 – 1090.

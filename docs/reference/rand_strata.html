@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>rand_strata: Random assignment by strata — rand_strata • jumble</title>
+<title>rnd_strata: Random assignment by strata — rand_strata • jumble</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="rand_strata: Random assignment by strata — rand_strata" />
+<meta property="og:title" content="rnd_strata: Random assignment by strata — rand_strata" />
 
 <meta property="og:description" content="Take a dataset and assign treatment by a specified stratum" />
 <meta name="twitter:card" content="summary" />
@@ -86,10 +86,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/01-mahalanobis.html">jumble: mahalanobis distance</a>
+      <a href="../articles/01-mahalanobis.html">jumble: Mahalanobis distance</a>
     </li>
     <li>
       <a href="../articles/02-rerand.html">jumble: Re-randomization approach</a>
+    </li>
+    <li>
+      <a href="../articles/03-assignment.html">jumble: Random assignment</a>
     </li>
   </ul>
 </li>
@@ -117,7 +120,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>rand_strata: Random assignment by strata</h1>
+    <h1>rnd_strata: Random assignment by strata</h1>
     <small class="dont-index">Source: <a href='https://github.com/kmcconeghy/jumble/blob/master/R/rand_strata.R'><code>R/rand_strata.R</code></a></small>
     <div class="hidden name"><code>rand_strata.Rd</code></div>
     </div>
@@ -128,7 +131,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>rand_strata</span>(<span class='no'>df</span>, <span class='no'>strata</span>, <span class='no'>seed</span>)</pre>
+    <pre class="usage"><span class='fu'>rnd_strata</span>(<span class='no'>df</span>, <span class='no'>strata</span>, <span class='no'>seed</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -153,8 +156,7 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>require</a></span>(<span class='no'>jumble</span>)
-<span class='fu'>rand_strata</span>()</div><div class='output co'>#&gt; <span class='error'>Error in nrow(df): argument "df" is missing, with no default</span></div><div class='input'>
+    <pre class="examples"><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

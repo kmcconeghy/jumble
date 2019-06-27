@@ -4,4 +4,5 @@ pkgdown_sha: ~
 articles:
   01-mahalanobis: 01-mahalanobis.html
   02-rerand: 02-rerand.html
+  03-assignment: 03-assignment.html
 

@@ -1,7 +1,7 @@
 Package: jumble
 Title: An R Package to perform different randomization procedures and assess covariate balance
 Description: This package is designed for streamlined stratified and re-randomization procedures, including assessing mahalanobis distance for balance.
-Version: 0.0.1.9999
+Version: 0.0.2
 Date: 2019-06-19
 Authors@R: c(person(given = "Kevin W.", family = "McConeghy", role = c("aut", "cre", "cph"), email = "kevin_mcconeghy@brown.edu"))
 Maintainer: Kevin W. McConeghy <kevin_mcconeghy@brown.edu>
@@ -18,7 +18,8 @@ Imports:
     broom (>= 0.4.2),
     magrittr (>= 1.5.0),
     stats,
-    Rcpp,
+    Rfast,
+    testthat
 Suggests:
     knitr,
     microbenchmark,

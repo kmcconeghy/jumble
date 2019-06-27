@@ -1,5 +1,5 @@
 ---
-title: "jumble: mahalanobis distance"
+title: "jumble: Mahalanobis distance"
 author: "Kevin W. McConeghy"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -50,7 +50,7 @@ $$ M \equiv (x_i - \bar{X}) ' cov(X)^{-1} (\bar{x_i} - \bar{X}) $$
 ### Trial Covariate Balance  
 The ACT trial was a single randomized trial, here are the observed mean differences +/- standard deviation in that single randomization.  
 
-```{r, eval=F}
+```{r, echo=F}
 df_grp_means <- df %>%
   select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
          drugs, karnof, oprior) %>%
@@ -65,14 +65,12 @@ df_grp_sd <- df %>%
   summarize_all(sd) %>%
   t(.)
   
-t <- df_grp_means[, 1] - df_grp_means[, 2] %>%
-  bind_cols(mean = ., sd = df_grp_sd) 
+t <- (df_grp_means[, 1] - df_grp_means[, 2]) /  df_grp_sd 
 
 t %>% round(., 4)
 ```
-These are the raw mean differences in selected covariates, most are close to zero, but race, msm, drug use have a mean difference ~2 percentage points.  
-
-With large treatment effects this may not be significant, but if evaluating small effects, 2 points could be an important source of confounding.  
+These are the standardized mean differences in selected covariates,
+with large treatment effects or sample sizes, small differences may not be significant, but if evaluating small effects, could be an important source of confounding.  
 
 ### What is the mahalanobis distance for these groups?  
 
@@ -95,7 +93,8 @@ $$ \frac{n_tn_c}n$$
 This is easy to compute
 ```{r }
 ssc <- (nrow(df_mdist[df_mdist$arms==0, ]) * nrow(df_mdist[df_mdist$arms==1, ])) / (nrow(df_mdist))
-
+```
+```{r, echo=F}
 cat('Sample size constant: ', round(ssc, 3))
 ```
 
@@ -109,7 +108,9 @@ X_t <- colMeans(df_mdist[df_mdist$arms==0, ])[2:length(df_mdist)]
 X_c <- colMeans(df_mdist[df_mdist$arms==1, ])[2:length(df_mdist)]
 
 X_delta <- X_t - X_c 
+```
 
+```{r, echo=F}
 cat('Difference in covariate means by treatment: \n ', round(X_delta, 3))
 ```
 
@@ -130,41 +131,110 @@ round(df_cov, 1)
 $$ M \equiv \frac{n_tn_c}n (\bar{X_t} - \bar{X_c}) ' cov(X)^{-1} (\bar{X_t} - \bar{X_c}) $$
 
 ```{r }
-M = ssc * (t(X_delta) %*% (df_cov %*% X_delta))
+M_man = ssc * (t(X_delta) %*% (df_cov %*% X_delta)) %>% as.vector(.)
+```
 
-cat('Manually computed M-distance: ', M)
+```{r, echo=F}
+cat('Manually computed M-distance: ', M_man)
+```
+
+jumble package function `mdis_grps`:  
+```{r }
+M_jumb <- mdis_grps(df_mdist[df_mdist$arms==0, 2:length(df_mdist)], 
+          df_mdist[df_mdist$arms==1, 2:length(df_mdist)]) * ssc 
+```
+
+```{r, echo=F}
+cat('Jumble M-distance: ', M_jumb)
 ```
 
 There is also an R-function which can compute M-distance.  
-```{r }
-cat('R function Mahalanobis: ', mahalanobis(X_t, X_c, cov = df_cov, inverted = T) * ssc)
+```{r, echo=F}
+df_cov <- df_mdist %>%
+  select(-arms) %>%
+  cov(.)
+M_base <- mahalanobis(X_t, X_c, cov = df_cov) * ssc
+
+cat('Base R Mahalanobis: ', M_base)
 ```
+
+There is also an Rfast function using C++:
+```{r, echo=F}
+M_fast <- Rfast::mahala(X_t, X_c, sigma = df_cov) * ssc
+cat('Rfast Mahalanobis: ', M_fast)
+```
+
+Manual calculation same as Base, same as Rfast  
+```{r }
+all.equal(M_man, M_jumb, M_base, M_fast) # Nearly equal
+```
+All functions provide nearly equal answers.  
+
+
+```{r, echo=F}
+library(microbenchmark)
+microbenchmark(
+  jumble = mdis_grps(df_mdist[df_mdist$arms==0, 2:length(df_mdist)], 
+          df_mdist[df_mdist$arms==1, 2:length(df_mdist)]) * ssc ,
+  rbase = mahalanobis(X_t, X_c, cov = df_cov) * ssc,
+  rfast = Rfast::mahala(X_t, X_c, sigma = df_cov) * ssc,
+  times = 1000
+)
+```
+Rfast blows away competition!  
+
 Typically you would take the square root of this distance, but that is not necessary for our purposes.  
+
+When performing a stratified analysis, M-distance can be used to construct the strata and perform a permuted block randomization.  
+
+In this case, you are evaluating each person / unit's distance from the mean of the whole group, then doing a stratified randomization by groups of like distance. Note: M-distance is an absolute measure, so does not pair those with similar covariates, but rather the joint distribution of covariates is similarly different from the mean values. So a distant value could mean covariates in the upper or lower quartile.  
+
+The formula is now:
+
+$$ M \equiv ({X_i} - \bar{X}) ' cov(X)^{-1} ({X_i} - \bar{X}) $$
+
+```{r, echo=F}
+X_delta <- apply(df_mdist, 2, function(x) x - mean(x))[, 2:length(df_mdist)] 
+```
+
+```{r, echo=F}
+df_cov <- df_mdist %>%
+  select(-arms) %>%
+  cov(.) %>%
+  solve(.) # inverse
+```
+
+```{r, echo=F}
+int_1 <- (X_delta %*% df_cov)
+int_2 <- t(X_delta)
+M_man <-  sqrt(diag(int_1 %*% int_2))
+
+tst <- df_mdist[, 2:length(df_mdist)] %>% as.matrix(.)
+M_base <- sqrt(mahalanobis(tst, colMeans(tst), cov=cov(tst)))
+
+M_fast <- Rfast::mahala(tst, colMeans(tst), sigma=cov(tst))
+```
+
+Manual calculation same as Base, same as Rfast  
+```{r }
+all.equal(M_man, M_base, M_fast) # Nearly equal
+```
+All functions provide nearly equal answers.  
 
 ### Benchmarking  
 Because a limitation of re-randomization is computation time, it is important to have a function which can compute M-distance quickly.  
 
 ```{r }
-df_t <- df[df$arms==1, ] %>%
-  select(age, race, gender, symptom, wtkg, hemo, msm, 
-         drugs, karnof, oprior)
-
-df_c <- df[df$arms==0, ] %>%
-  select(age, race, gender, symptom, wtkg, hemo, msm, 
-         drugs, karnof, oprior) 
-
 library(microbenchmark)
 microbenchmark(
-  mine = mdist(df_t, df_c),
-  rbase = {t <- colMeans(df_t) 
-           c <- colMeans(df_c) 
-           covit <- cov(rbind(df_t, df_c))
-           ssc <- (nrow(df_t) * nrow(df_c)) / (nrow(df_t) + nrow(df_c))
-           mahalanobis(t, c, cov = covit) * ssc},
+  mine = mdis_chrt(tst),
+  rfast = Rfast::mahala(tst, colMeans(tst), sigma=cov(tst)),
+  rbase = {mahalanobis(tst, colMeans(tst), cov=cov(tst))},
   times = 1000
 )
 ```
-The base-R function is faster than manual but not by a lot.  
+My handwritten code is very in-efficient, Rfast outperforms the base code.    
+In the re-randomization procedures, the R-fast computation is used for speed. Unit testing is in place to ensure the Mahalanobis calculations are consistent across Rfast, Base R and the manual computations for version control and reproducibility.  
 
 # Contacting authors  
 The primary author of the package was Kevin W. McConeghy. [See here](https://github.com/kmcconeghy/)

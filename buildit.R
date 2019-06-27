@@ -1,10 +1,13 @@
 
 setwd("~/GitHub/jumble")
+library(tidyverse)
+library(jumble)
 
 ## Build
+
 devtools::document()
 pkgbuild::build()
-#devtools::test()
+devtools::test()
 devtools::check()
 
 
