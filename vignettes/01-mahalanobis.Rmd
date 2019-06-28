@@ -28,6 +28,10 @@ The example dataset used in this package is freely available and comes from a cl
 #### Load dataset  
 ```{r }
 df <- jumble::ACTG175
+
+#Variables for balancing  
+var_nms <- c('age', 'race', 'gender', 'symptom', 'wtkg', 'hemo', 
+          'msm', 'drugs', 'karnof', 'oprior')
 ```
 
 ## Measure of covariate balance  
@@ -51,17 +55,13 @@ $$ M \equiv (x_i - \bar{X}) ' cov(X)^{-1} (\bar{x_i} - \bar{X}) $$
 The ACT trial was a single randomized trial, here are the observed mean differences +/- standard deviation in that single randomization.  
 
 ```{r, echo=F}
-df_grp_means <- df %>%
-  select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
-         drugs, karnof, oprior) %>%
+df_grp_means <- df[, var_nms] %>%
   group_by(arms) %>%
   summarize_all(., mean) %>%
   t(.) 
 colnames(df_grp_means) <- c('zido', 'combo')
 
-df_grp_sd <- df %>%
-  select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
-         drugs, karnof, oprior) %>%
+df_grp_sd <- df[, var_nms] %>%
   summarize_all(sd) %>%
   t(.)
   
@@ -80,9 +80,7 @@ To compute the mahalanobis formula, use must do some matrix algebra.
 1) Only include treatment indicator and k covarates  
 2) Ensure all covariates are numeric  
 ```{r }
-df_mdist <- df %>%
-  select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
-         drugs, karnof, oprior) %>%
+df_mdist <- df[, var_nms] %>%
   map_dfr(., as.numeric) 
 ```
 

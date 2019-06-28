@@ -40,6 +40,10 @@ The example dataset used in this package is freely available and comes from a cl
 #### Load dataset  
 ```{r }
 df <- jumble::ACTG175
+
+#Variables for balancing  
+vars <- c('age', 'race', 'gender', 'symptom', 'wtkg', 'hemo', 
+          'msm', 'drugs', 'karnof', 'oprior')
 ```
 
 ## Measure of covariate balance  
@@ -52,17 +56,13 @@ Where n is the sample size, t treated, c controls, and X represents the covariat
 ### Trial Covariate Balance  
 The ACT trial was a single randomized trial, here are the observed standardized mean differences in that single randomization (difference in group means / pooled standard deviation).    
 ```{r, echo=F}
-df_grp_means <- df %>%
-  select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
-         drugs, karnof, oprior) %>%
+df_grp_means <- df[, c('arms', vars)] %>%
   group_by(arms) %>%
   summarize_all(., mean) %>%
   t(.) 
 colnames(df_grp_means) <- c('zido', 'combo')
 
-df_grp_sd <- df %>%
-  select(arms, age, race, gender, symptom, wtkg, hemo, msm, 
-         drugs, karnof, oprior) %>%
+df_grp_sd <- df[, c('arms', vars)] %>%
   summarize_all(sd) %>%
   t(.)
   
@@ -72,13 +72,9 @@ t %>% round(., 4)
 ```
 
 ```{r, echo=F}
-df_t <- df[df$arms==1, ] %>%
-  select(age, race, gender, symptom, wtkg, hemo, msm, 
-         drugs, karnof, oprior)
+df_t <- df[df$arms==1, vars]
 
-df_c <- df[df$arms==0, ] %>%
-  select(age, race, gender, symptom, wtkg, hemo, msm, 
-         drugs, karnof, oprior) 
+df_c <- df[df$arms==0, vars] 
 
 ssc <- (nrow(df_c) * nrow(df_t)) / (nrow(bind_rows(df_t, df_c))) # sample size correction
 
@@ -132,12 +128,9 @@ permute_m <- function(df, vars, seed) {
 ```
 
 ```{r, }
-m_vars <- c('age', 'race', 'gender', 'symptom', 'wtkg', 'hemo', 'msm', 
-         'drugs', 'karnof', 'oprior')
-
 seed_list <- as.integer(Sys.Date()) + 1:10000L 
 
-sims <- sapply(seed_list, function(x) permute_m(df, m_vars, x)) %>%
+sims <- sapply(seed_list, function(x) permute_m(df, vars, x)) %>%
   unlist(.)
 ```
 
@@ -158,6 +151,24 @@ At this point we have completed steps 1-3, we have our entire cohort, a list of 
 Now we must conduct the re-randomization procedure...
 
 ### Re-randomization   
+` rnd_rerand` Will execute a single randomization given x and Mahalanobis cutoff.  
+```{r }
+library(microbenchmark)
+tst_run <- microbenchmark(
+  rerandomize = rnd_rerand(x = df[, vars],
+                            cutoff = quantile(sims, 0.001)), 
+  times=10, unit = 's')
+
+tlt_runtime <- round(sum(tst_run$time / 10^9), 3) 
+```
+```{r, echo=F}
+cat('Runtime to find 10 acceptable randomizations:', tlt_runtime)
+```
+```{r, echo=F}
+rerandomize = rnd_rerand(x = df[, vars],
+                            cutoff = quantile(sims, 0.001)),
+
+```
 
 # Contacting authors  
 The primary author of the package was Kevin W. McConeghy. [See here](https://github.com/kmcconeghy/)
