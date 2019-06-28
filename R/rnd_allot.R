@@ -35,10 +35,11 @@ rnd_allot <- function(x, seed=NULL) {
   grp_sz <- chrt_sz / 2
 
   #determine odd unit assignment
+  #rbinom is faster, but use sample here for consistency
   if (is.integer(grp_sz)==F) { # if not even number
     grp_sz_floor <- floor(chrt_sz / 2)
     grp_sz_ceiling <- ceiling(chrt_sz / 2)
-    grp_rnd <- if (rbinom(1, 1, prob = 0.5)) {grp_sz_floor} else {grp_sz_ceiling}
+    grp_rnd <- if (sample(0:1, 1)) {grp_sz_floor} else {grp_sz_ceiling}
   } else {grp_rnd <- grp_sz}
 
   assign_grp <- rep(c('a','b'), c(chrt_sz - grp_rnd, grp_rnd))

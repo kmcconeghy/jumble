@@ -153,16 +153,18 @@ Now we must conduct the re-randomization procedure...
 ### Re-randomization   
 ` rnd_rerand` Will execute a single randomization given x and Mahalanobis cutoff.  
 ```{r }
+runs <- 100
+
 library(microbenchmark)
 tst_run <- microbenchmark(
   rerandomize = rnd_rerand(x = df[, vars],
                             cutoff = quantile(sims, 0.001)), 
-  times=10, unit = 's')
+  times=runs, unit = 's')
 
-tlt_runtime <- round(sum(tst_run$time / 10^9), 3) 
+avg_run_s<- round(sum(tst_run$time / 10^9) / runs, 3) 
 ```
 ```{r, echo=F}
-cat('Runtime to find 10 acceptable randomizations:', tlt_runtime)
+cat('Average runtime in seconds to find 1 acceptable randomization:', avg_run_s)
 ```
 ```{r, echo=F}
 rerandomize = rnd_rerand(x = df[, vars],

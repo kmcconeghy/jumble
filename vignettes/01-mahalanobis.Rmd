@@ -55,17 +55,18 @@ $$ M \equiv (x_i - \bar{X}) ' cov(X)^{-1} (\bar{x_i} - \bar{X}) $$
 The ACT trial was a single randomized trial, here are the observed mean differences +/- standard deviation in that single randomization.  
 
 ```{r, echo=F}
-df_grp_means <- df[, var_nms] %>%
+df_grp_means <- df[,c('arms', var_nms)] %>%
   group_by(arms) %>%
   summarize_all(., mean) %>%
   t(.) 
+
 colnames(df_grp_means) <- c('zido', 'combo')
 
 df_grp_sd <- df[, var_nms] %>%
   summarize_all(sd) %>%
   t(.)
   
-t <- (df_grp_means[, 1] - df_grp_means[, 2]) /  df_grp_sd 
+t <- (df_grp_means[var_nms, 1] - df_grp_means[var_nms, 2]) /  df_grp_sd 
 
 t %>% round(., 4)
 ```
@@ -80,7 +81,7 @@ To compute the mahalanobis formula, use must do some matrix algebra.
 1) Only include treatment indicator and k covarates  
 2) Ensure all covariates are numeric  
 ```{r }
-df_mdist <- df[, var_nms] %>%
+df_mdist <- df[,c('arms', var_nms)] %>%
   map_dfr(., as.numeric) 
 ```
 
@@ -101,9 +102,9 @@ cat('Sample size constant: ', round(ssc, 3))
 $$ \bar{X_t} - \bar{X_c}$$  
 
 ```{r }
-X_t <- colMeans(df_mdist[df_mdist$arms==0, ])[2:length(df_mdist)]
+X_t <- colMeans(df_mdist[df_mdist$arms==0, var_nms])
 
-X_c <- colMeans(df_mdist[df_mdist$arms==1, ])[2:length(df_mdist)]
+X_c <- colMeans(df_mdist[df_mdist$arms==1, var_nms])
 
 X_delta <- X_t - X_c 
 ```
@@ -172,8 +173,8 @@ All functions provide nearly equal answers.
 ```{r, echo=F}
 library(microbenchmark)
 microbenchmark(
-  jumble = mdis_grps(df_mdist[df_mdist$arms==0, 2:length(df_mdist)], 
-          df_mdist[df_mdist$arms==1, 2:length(df_mdist)]) * ssc ,
+  jumble = mdis_grps(df_mdist[df_mdist$arms==0, var_nms], 
+                     df_mdist[df_mdist$arms==1, var_nms]) * ssc,
   rbase = mahalanobis(X_t, X_c, cov = df_cov) * ssc,
   rfast = Rfast::mahala(X_t, X_c, sigma = df_cov) * ssc,
   times = 1000
@@ -192,7 +193,7 @@ The formula is now:
 $$ M \equiv ({X_i} - \bar{X}) ' cov(X)^{-1} ({X_i} - \bar{X}) $$
 
 ```{r, echo=F}
-X_delta <- apply(df_mdist, 2, function(x) x - mean(x))[, 2:length(df_mdist)] 
+X_delta <- apply(df_mdist, 2, function(x) x - mean(x))[, var_nms] 
 ```
 
 ```{r, echo=F}
@@ -207,13 +208,13 @@ int_1 <- (X_delta %*% df_cov)
 int_2 <- t(X_delta)
 M_man <-  sqrt(diag(int_1 %*% int_2))
 
-tst <- df_mdist[, 2:length(df_mdist)] %>% as.matrix(.)
+tst <- df_mdist[, var_nms] %>% as.matrix(.)
 M_base <- sqrt(mahalanobis(tst, colMeans(tst), cov=cov(tst)))
 
 M_fast <- Rfast::mahala(tst, colMeans(tst), sigma=cov(tst))
 ```
 
-Manual calculation same as Base, same as Rfast  
+Test all methods give equal answers:    
 ```{r }
 all.equal(M_man, M_base, M_fast) # Nearly equal
 ```

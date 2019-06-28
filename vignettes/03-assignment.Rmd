@@ -34,6 +34,20 @@ The example dataset used in this package is freely available and comes from a cl
 df <- jumble::ACTG175
 ```
 
+## A note on random number generation  
+The random sampling method underlying jumble functions is the base R function `sample()`, `rbinom()`. While computational speed may be problematic in some cases, the base sample function is reliable, stable, and well-documented and tested.  
+
+The `sample()` functions calls the default Random number generator for R, the Mershene-Twister method, which can be queried using `RNGKind()`.@Mersenne1998  
+
+Current system build:  
+```{r, echo=F}
+t <- sessionInfo()
+cat(t$R.version$version.string)
+```
+```{r, echo=F}
+cat('Windows platform :', t$platform)
+```
+
 ## Random assignment to K-groups  
 Assigning treatment is easy if you want equal probability of assignment to one or more groups, without concern to final sample size in each arm, covariate balance etc.  
 
