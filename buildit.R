@@ -5,10 +5,10 @@ library(jumble)
 ## Build
 
 devtools::document()
-pkgbuild::build()
 devtools::test()
 devtools::check()
 
+pkgbuild::build()
 
 pkgdown::build_site()
 
