@@ -4,30 +4,23 @@
 #' it will randomly assign the odd one out to one of the groups. Currently only 2
 #' groups.
 #'
-#' @usage rnd_allot(x, seed)
+#' @usage rnd_allot(x)
 #'
 #' @param x a Vector to assign
 #'
-#' @param seed A seed for random assignment reproducibility
-#'
-#' @return An array with x, k assignment groups, and the seed as an attribute
+#' @return An array with x, k assignment groups
 #'
 #' @export
 #'
 #' @examples
 #' require(jumble)
 #' x <- 1:100
-#' rnd_allot(x, as.integer(ymd('2016-01-01')))
+#' rnd_allot(x)
 #'
 #' @import tidyverse stats
-rnd_allot <- function(x, seed=NULL) {
-
-  if (is.null(seed)) seed <- as.integer(Sys.Date() + runif(1, 0, 100))
-
+rnd_allot <- function(x) {
   #checks
   stopifnot(is.vector(x))
-  stopifnot(is.integer(seed))
-  set.seed(seed)
 
   #Parameters
   groups <- letters[1:2]
@@ -40,14 +33,11 @@ rnd_allot <- function(x, seed=NULL) {
     grp_sz_floor <- floor(chrt_sz / 2)
     grp_sz_ceiling <- ceiling(chrt_sz / 2)
     grp_rnd <- if (sample(0:1, 1)) {grp_sz_floor} else {grp_sz_ceiling}
-  } else {grp_rnd <- grp_sz}
+  } else { grp_rnd <- grp_sz }
 
   assign_grp <- rep(c('a','b'), c(chrt_sz - grp_rnd, grp_rnd))
 
-  assign <- bind_cols(id=x,
-                      group = sample(assign_grp))
-
-  attr(assign, 'seed') <- seed
+  assign <- bind_cols(id=x, group = sample(assign_grp))
 
   return(assign)
 }

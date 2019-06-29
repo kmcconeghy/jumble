@@ -16,7 +16,7 @@
 #'
 #' @examples
 #'
-rand_strata <- function(df, strata, seed=NULL) {
+rnd_strata <- function(df, strata, seed=NULL) {
 
   # Seed
     if (is.null(seed)) seed <- as.integer(Sys.time())

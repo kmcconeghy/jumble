@@ -12,7 +12,7 @@ bibliography: mybib.bib
 
 Welcome to jumble! This program was written as a companion to academic work performed by researchers at Brown University to conduct re-randomization for cluster-randomized nursing home trials. 
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, warning=F, message = FALSE}
 library(tidyverse)
 library(ggplot2)
 library(jumble)
@@ -149,7 +149,11 @@ pidnum <- pidnum[2:length(pidnum)] # drop 1
 
 n=10000
 
-df_assign <- lapply(1:n, function(x) rnd_allot(pidnum, 18073L+x))
+seeds <- sample(-100000:100000, n)
+df_assign <- lapply(1:n, function(x) {
+  set.seed(seeds[x])
+  rnd_allot(pidnum)
+  })
 
 assigns <- bind_cols(df_assign[[1]][, 1], 
                      lapply(df_assign, function(x) x[, 2]))

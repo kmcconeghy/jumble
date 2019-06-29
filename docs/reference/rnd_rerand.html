@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>mdis_rbase: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets — mdis_rbase • jumble</title>
+<title>rnd_rerand: Re-randomization on mahalanobis and acceptance criteria — rnd_rerand • jumble</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,13 @@
 
 
 
-<meta property="og:title" content="mdis_rbase: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets — mdis_rbase" />
+<meta property="og:title" content="rnd_rerand: Re-randomization on mahalanobis and acceptance criteria — rnd_rerand" />
 
-<meta property="og:description" content="This function will compute M-distance for two datasets by covariate means" />
+<meta property="og:description" content="Conduct a re-randomization procedure using a specified set of covariates,
+for each random assignment a mahalanobis distance of group means will be computed
+with a sample size adjustment, and the user can either allow the program to find
+a cut-off from a chi-square distribution for an given acceptance probability,
+default probability is 0.001.  Otherwise specify the cutoff, M-distance." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,35 +124,49 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>mdis_rbase: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets</h1>
-    <small class="dont-index">Source: <a href='https://github.com/kmcconeghy/jumble/blob/master/R/mdis_rbase.R'><code>R/mdis_rbase.R</code></a></small>
-    <div class="hidden name"><code>mdis_rbase.Rd</code></div>
+    <h1>rnd_rerand: Re-randomization on mahalanobis and acceptance criteria</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kmcconeghy/jumble/blob/master/R/rnd_rerand.R'><code>R/rnd_rerand.R</code></a></small>
+    <div class="hidden name"><code>rnd_rerand.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function will compute M-distance for two datasets by covariate means</p>
+    <p>Conduct a re-randomization procedure using a specified set of covariates,
+for each random assignment a mahalanobis distance of group means will be computed
+with a sample size adjustment, and the user can either allow the program to find
+a cut-off from a chi-square distribution for an given acceptance probability,
+default probability is 0.001.  Otherwise specify the cutoff, M-distance.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>mdis_rbase</span>(<span class='no'>x_t</span>, <span class='no'>x_c</span>)</pre>
+    <pre class="usage"><span class='fu'>rnd_rerand</span>(<span class='no'>x</span>, <span class='no'>cutoff</span>, <span class='no'>pr_a</span>, <span class='no'>seed</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x_t</th>
-      <td><p>a dataframe or matrix class object, all numeric</p></td>
+      <th>x</th>
+      <td><p>an id, vector to assign groups to</p></td>
     </tr>
     <tr>
-      <th>x_c</th>
-      <td><p>a dataframe or matrix class object, all numeric</p></td>
+      <th>cutoff</th>
+      <td><p>Mahalanobis distance cut-off</p></td>
+    </tr>
+    <tr>
+      <th>pr_a</th>
+      <td><p>Probability of acceptance, used if cutoff is null; default is 0.001</p></td>
+    </tr>
+    <tr>
+      <th>seed</th>
+      <td><p>A seed for random assignment reproducibility</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a numeric vector of length one, the M-distance multiplied by a constance for sample size</p>
+    <p>A dataframe, contains id, group assignment, and
+attributes giving the seed, cut-off, randomization date, number of iterations
+needed to achieve randomization</p>
     
 
   </div>

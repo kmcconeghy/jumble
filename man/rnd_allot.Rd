@@ -4,15 +4,13 @@
 \alias{rnd_allot}
 \title{rnd_allot: Random allotment into one of two groups of equal sample size}
 \usage{
-rnd_allot(x, seed)
+rnd_allot(x)
 }
 \arguments{
 \item{x}{a Vector to assign}
-
-\item{seed}{A seed for random assignment reproducibility}
 }
 \value{
-An array with x, k assignment groups, and the seed as an attribute
+An array with x, k assignment groups
 }
 \description{
 Used when equal sized groups are desired, if the cohort size is odd then
@@ -22,6 +20,6 @@ groups.
 \examples{
 require(jumble)
 x <- 1:100
-rnd_allot(x, as.integer(ymd('2016-01-01')))
+rnd_allot(x)
 
 }

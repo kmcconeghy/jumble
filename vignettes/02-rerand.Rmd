@@ -12,7 +12,7 @@ bibliography: mybib.bib
 
 Welcome to jumble! This program was written as a companion to academic work performed by researchers at Brown University to conduct re-randomization for cluster-randomized nursing home trials. 
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, warning=F, message = FALSE}
 library(tidyverse)
 library(ggplot2)
 library(jumble)
@@ -107,10 +107,11 @@ Here we perform a Permutation with 10,000 simulations, where randomly assign ind
 Assignment done using rnd_allot function, `?rnd_allot`.  
 ```{r }
 permute_m <- function(df, vars, seed) {
+  set.seed(seed)
   
   id <- 1:nrow(df)
   
-  assign <- rnd_allot(id, seed)
+  assign <- rnd_allot(id)
   
   df_2 <- df %>%
     mutate(arms = assign$group) #fair coin assignment
@@ -128,7 +129,7 @@ permute_m <- function(df, vars, seed) {
 ```
 
 ```{r, }
-seed_list <- as.integer(Sys.Date()) + 1:10000L 
+seed_list <- sample(-10000:10000, 10000) #random seeds
 
 sims <- sapply(seed_list, function(x) permute_m(df, vars, x)) %>%
   unlist(.)
@@ -215,8 +216,8 @@ tab_1[nrows_vars+2, 3] <- sd(tab_1[1:nrows_vars, 3])
 tab_1[nrows_vars+2, 6] <- sd(tab_1[1:nrows_vars, 6], na.rm=T)
 
 var_tri <- sd(tab_1[1:nrows_vars, 3])
-var_rern <- sd(tab_1[1:nrows_vars, 6])
-var_pct <- (var_rern / var_tri * 100)
+var_rernd <- sd(tab_1[1:nrows_vars, 6])
+var_pct <- (var_rernd / var_tri * 100)
 
 rownames(tab_1) <- c(vars, 'Average', 'Std. Dev.')
 apply(tab_1, 2, formatC, digits=2) %>% unlist(.) %>%
@@ -235,19 +236,21 @@ We can see the how much tighter covariate differences are if we perform a simula
 rndms <- 1000L
 #Matrix of values  
 rnd_mn_diff <- matrix(nrow = rndms, ncol = length(vars))  
+seeds <- sample(-100000:100000, rndms)
 
 for (i in 1:rndms) {
   
-  sd_iter <- as.integer(as.Date('2019-06-28') + i)
-  
   rnd_id <- df$pidnum
   
-  df_iter <- bind_cols(df[, vars], rnd_allot(rnd_id, sd_iter)[, 2]) %>%
+  set.seed(seeds[i])
+  
+  df_iter <- bind_cols(df[, vars], rnd_allot(rnd_id)[, 2]) %>%
     as.data.frame(.)
   
   mn_diff_i <- (colMeans(df_iter[df_iter$group=='a', vars]) - 
-              colMeans(df_iter[df_iter$group=='b', vars])) / 
-              (lapply(df_iter[, vars], sd) %>% unlist(.))
+                colMeans(df_iter[df_iter$group=='b', vars])) / 
+                (lapply(df_iter[, vars], sd) %>% unlist(.))
+  
   rnd_mn_diff[i, ] <- mn_diff_i
 }
 ```
@@ -255,31 +258,40 @@ for (i in 1:rndms) {
 ```{r, echo=F}
 rndms <- 1000L
 #Matrix of values  
-rernd_mn_diff <- matrix(nrow = rndms, ncol = length(vars))  
+rernd_mn_diff <- matrix(nrow = rndms, ncol = length(vars)+1)  
+
+sd_iter <- sample(-100000:100000, rndms) 
 
 for (i in 1:rndms) {
   
-  sd_iter <- as.integer(as.Date('2019-06-28') + i)
+  #set seeds
   
   df_iter <- rnd_rerand(x=df[, vars], 
                         cutoff=quantile(sims, 0.001), 
-                        seed = sd_iter)
+                        seed = sd_iter[i])
   
   mn_diff_i <- (colMeans(df_iter[df_iter$group=='a', vars]) - 
               colMeans(df_iter[df_iter$group=='b', vars])) / 
               (lapply(df_iter[, vars], sd) %>% unlist(.))
-  rernd_mn_diff[i, ] <- mn_diff_i
+  
+  rernd_mn_diff[i, 1:length(mn_diff_i)] <- mn_diff_i
+  rernd_mn_diff[i, ncol(rernd_mn_diff)] <- attr(df_iter, 'seed') #store seed
 }
+
+#Confirm all seeds unique (i.e. didn't pull same seed twice)
+paste0(rndms, ' unique randomizations obtained')
+nrow(unique(rernd_mn_diff)) == rndms
 ```
 
 
-```{r }
+```{r, echo=F}
 rnd_mn_diff <- rnd_mn_diff %>%
   as.data.frame(.) %>%
   mutate(random = 'unrestricted')
 
 rernd_mn_diff <- rernd_mn_diff %>%
   as.data.frame(.) %>%
+  select(-11) %>%
   mutate(random = 'restricted')
 
 md_diff <- bind_rows(rnd_mn_diff, rernd_mn_diff) %>%
@@ -288,19 +300,20 @@ md_diff <- bind_rows(rnd_mn_diff, rernd_mn_diff) %>%
 colnames(md_diff) <- c(vars, 'random')
 ```
 
-```{r }
+```{r, echo=F}
 md_diff_grp <- gather(md_diff, key = 'var', value = 'x', -random)
 
 ggplot(md_diff_grp, 
-       aes(x=factor(var), y=x, color = random, fill = random)) +
-  geom_boxplot(, show.legend =F) +
+       aes(x=factor(var), y=x, fill = random)) +
+  geom_boxplot() +
+  xlab('Standardized Mean Difference Between Groups') +
+  ylab('Variable') +
   coord_flip()
 ```
 
 You can see how much tighter the distributions are for re-randomization!
 
-Refer to the permutation vignette for implications of this randomization
-strategy in the analysis stage.  
+Refer to the permutation vignette for implications of this randomization strategy in the analysis stage.  
 
 # Contacting authors  
 The primary author of the package was Kevin W. McConeghy. [See here](https://github.com/kmcconeghy/)

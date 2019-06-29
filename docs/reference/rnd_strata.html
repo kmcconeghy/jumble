@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>mdis_rbase: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets — mdis_rbase • jumble</title>
+<title>rnd_strata: Random assignment by strata — rnd_strata • jumble</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="mdis_rbase: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets — mdis_rbase" />
+<meta property="og:title" content="rnd_strata: Random assignment by strata — rnd_strata" />
 
-<meta property="og:description" content="This function will compute M-distance for two datasets by covariate means" />
+<meta property="og:description" content="Take a dataset and assign treatment by a specified stratum" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,37 +120,44 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>mdis_rbase: Matrix algebra in base R for covariate balance using Mahalanobis distance of two datasets</h1>
-    <small class="dont-index">Source: <a href='https://github.com/kmcconeghy/jumble/blob/master/R/mdis_rbase.R'><code>R/mdis_rbase.R</code></a></small>
-    <div class="hidden name"><code>mdis_rbase.Rd</code></div>
+    <h1>rnd_strata: Random assignment by strata</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kmcconeghy/jumble/blob/master/R/rnd_strata.R'><code>R/rnd_strata.R</code></a></small>
+    <div class="hidden name"><code>rnd_strata.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function will compute M-distance for two datasets by covariate means</p>
+    <p>Take a dataset and assign treatment by a specified stratum</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>mdis_rbase</span>(<span class='no'>x_t</span>, <span class='no'>x_c</span>)</pre>
+    <pre class="usage"><span class='fu'>rnd_strata</span>(<span class='no'>df</span>, <span class='no'>strata</span>, <span class='no'>seed</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x_t</th>
-      <td><p>a dataframe or matrix class object, all numeric</p></td>
+      <th>df</th>
+      <td><p>a dataframe, containing strata variable</p></td>
     </tr>
     <tr>
-      <th>x_c</th>
-      <td><p>a dataframe or matrix class object, all numeric</p></td>
+      <th>strata</th>
+      <td><p>a column in df naming the stratification variable, can be character or numeric</p></td>
+    </tr>
+    <tr>
+      <th>seed</th>
+      <td><p>A seed for random assignment reproducibility</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a numeric vector of length one, the M-distance multiplied by a constance for sample size</p>
+    <p>dataframe with new column assigning treatment</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -158,7 +165,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>
