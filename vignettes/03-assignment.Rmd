@@ -27,7 +27,7 @@ In this vignette we demonstrate some functions used for random assignment, follo
   3) Randomization must be random!
 
 ### Example dataset  
-The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: ?jumble::ACTG175
+The example dataset used in this package is freely available and comes from a clinical HIV therapy trial conducted in the 1990s.[@HammerSM1996] See: ?jumble::ACTG175
 
 #### Load dataset  
 ```{r }

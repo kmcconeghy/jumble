@@ -23,7 +23,7 @@ library(jumble, warn.conflicts)
 In this vignette we will explain how to use Mahalanobis distance as a measure of covariate balance between two groups.  
 
 ### Example dataset  
-The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: ?jumble::ACTG175 
+The example dataset used in this package is freely available and comes from a clinical HIV therapy trial conducted in the 1990s.[@HammerSM1996] See: ?jumble::ACTG175 
 
 #### Load dataset  
 ```{r }

@@ -35,7 +35,7 @@ In this vignette we will explain how to use covariate balance as criteria for re
   6) Perform inference (using a randomization test that follows exactly steps 2-4).  
 
 ### Example dataset  
-The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.[@HammerSM1996] See: ?jumble::ACTG175
+The example dataset used in this package is freely available and comes from a clinical HIV therapy trial conducted in the 1990s.[@HammerSM1996] See: ?jumble::ACTG175
 
 #### Load dataset  
 ```{r }

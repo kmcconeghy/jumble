@@ -22,9 +22,30 @@ This package relies heavily on the suite of packages and programming termed "Tid
 Interested users should have a cohort of trial subjects to use with this package. The package functions will iteratively assign K treatments (currently only trials with two treatments can be evaluated), assess balance according to the Mahalanobis distance, then re-randomize if M-distance < minimum acceptable criteria. The criteria, or cut-off, can either be selected assuming M-distance is geometrically distributed with k degrees of freedom where k is the number of covariates. In this case the user can select an arbitrary acceptance probability. Or the user can use ancillary functions to generate an empirical distribution of M, and choose thier own cut-off.  
 
 # Vignettes  
-Companion documents have been written to assist interested readers with the background and use of the package. 
+Companion documents have been written to assist interested readers with the background and use of the package.  
+
+- Mahalanobis distance measures  
+This explains one of common measures used to demonstrate covariate balance and how it can be deployed in randomization procedures  
 ```{r, eval=F}
-vignette("01-mahalanobis", "rerand")
+vignette("01-mahalanobis", "jumble")
+```
+
+- Re-randomization  
+Goes over a particular re-randomization method using the Mahalanobis distance measures  
+```{r, eval=F}
+vignette("02-rerand", "jumble")
+```
+
+- Assignment   
+Explains some of the underlying sampling functions which drive randomization  
+```{r, eval=F}
+vignette("03-assignment", "jumble")
+```
+
+- Stratification   
+Examples for how to perform stratified randomizations  
+```{r, eval=F}
+vignette("04-stratification", "jumble")
 ```
 
 # Latest Version Updates  

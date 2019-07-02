@@ -1,14 +1,12 @@
-#' @title rnd_strata: Random assignment by strata
+#' @title rnd_str: Random assignment by strata
 #'
 #' @description Take a dataset and assign treatment by a specified stratum
 #'
-#' @usage rnd_strata(df, strata, seed)
+#' @usage rnd_str(df, strata)
 #'
 #' @param df a dataframe, containing strata variable
 #'
 #' @param strata a column in df naming the stratification variable, can be character or numeric
-#'
-#' @param seed A seed for random assignment reproducibility
 #'
 #' @return dataframe with new column assigning treatment
 #'
@@ -16,11 +14,7 @@
 #'
 #' @examples
 #'
-rnd_strata <- function(df, strata, seed=NULL) {
-
-  # Seed
-    if (is.null(seed)) seed <- as.integer(Sys.time())
-    set.seed(seed)
+rnd_str <- function(df, strata) {
 
   # Tidy eval
     enq_strata <- rlang::enquo(strata)
@@ -29,12 +23,10 @@ rnd_strata <- function(df, strata, seed=NULL) {
     sampsi <- nrow(df) # length of assign vector
     str_num <- nrow(distinct(df, !!enq_strata))
 
-  # map
     assign <- df %>%
-      group_split(!!enq_strata) %>%
-      map(~rbinom(nrow(.), 1, prob=0.5)) %>%
-      combine(.)
+      group_by(!!enq_strata) %>%
+      mutate(assign = sample(0:1, n(), replace=T))
 
-    bind_cols(df, assign = assign) %>%
+    bind_cols(assign) %>%
     return(.)
 }
