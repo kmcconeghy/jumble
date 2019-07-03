@@ -4,12 +4,14 @@
 \alias{rnd_str}
 \title{rnd_str: Random assignment by strata}
 \usage{
-rnd_str(df, strata)
+rnd_str(df, strata, id)
 }
 \arguments{
 \item{df}{a dataframe, containing strata variable}
 
 \item{strata}{a column in df naming the stratification variable, can be character or numeric}
+
+\item{id}{A variable identify unit of randomization}
 }
 \value{
 dataframe with new column assigning treatment
@@ -18,5 +20,7 @@ dataframe with new column assigning treatment
 Take a dataset and assign treatment by a specified stratum
 }
 \examples{
+df <- jumble::ACTG175
+rnd_str(df, symptom, pidnum)
 
 }

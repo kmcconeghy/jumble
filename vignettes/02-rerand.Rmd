@@ -221,7 +221,7 @@ var_pct <- (var_rernd / var_tri * 100)
 
 rownames(tab_1) <- c(vars, 'Average', 'Std. Dev.')
 apply(tab_1, 2, formatC, digits=2) %>% unlist(.) %>%
-DT::datatable(.)
+knitr::kable(.)
 ```
 
 The average standardized mean difference between groups is ~ 0 for the trial and the re-randomizations. This is expected, randomization is designed to achieve a value of zero in the mean difference of covariates between assigned groups, i.e. (T =1 | E[X]) - (T=0 | E[X]) = 0. But what is notable is that re-randomization achieves a significant reduction in the variance! moving from `r formatC(var_tri, digits=3)` to `r formatC(var_rernd, digits=3)`, a reduction of `r formatC(var_pct, digits=2)`%.    

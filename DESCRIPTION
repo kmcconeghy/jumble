@@ -6,7 +6,7 @@ Date: 2019-06-19
 Authors@R: c(person(given = "Kevin W.", family = "McConeghy", role = c("aut", "cre", "cph"), email = "kevin_mcconeghy@brown.edu"))
 Maintainer: Kevin W. McConeghy <kevin_mcconeghy@brown.edu>
 URL: https://github.com/kmcconeghy/jumble
-Depends: R (>= 3.6.0),
+Depends: R (>= 3.5.1),
   tidyverse
 Imports:
     dplyr (>= 0.7.4),

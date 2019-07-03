@@ -28,7 +28,9 @@ The example dataset used in this package is freely available and comes from a cl
 
 #### Load dataset  
 ```{r }
-df <- jumble::ACTG175
+df <- jumble::ACTG175  
+vars <- c('age', 'race', 'gender', 'symptom', 'wtkg', 
+          'hemo', 'msm', 'drugs', 'karnof', 'oprior', 'str2')
 ```
 
 ## Single covariate stratification  
@@ -37,24 +39,386 @@ A common method for stratification is to take 1-2 covariates which are considere
 ### Identify a strong predictor of the primary outcome  
 Allow the trial design is a little more complicated, we will simply look at the `cens` event (A CD4 T cell drop of 50 or more, AIDs defining event, or death).  
 ```{r }
-glm(cens ~ age + hemo + msm + drugs + oprior + z30 + 
-      race + gender + str2 + symptom, data = df) %>%
+glm(cens ~ ., 
+    data = df[, c('cens', vars)],
+    family = binomial) %>%
   summary(.)
 ```
-We identify two strong predictors, `drugs` which is history of prior IV drug abuse, and `symptom` which is an indictor for a symptomatic HIV infection on presentation (essentially a progressed infection).  
+We identify a few important predictors, str2 is an indicator for prior exposure to anti-retroviral therapy.    
 
 In general if you have no prior knowledge, you should select strata which are highly predictive of outcome.  
 
-For an example, lets examine symptomatic presenters.  So maybe we want to conduct a subsequent trial where we group individuals by `symptom` then randomize within those two groups.  
+For an example, lets examine `str2`.
 
 ### Random assignment within `symptom`  
 ```{r }
-df_str <- rnd_str(df, symptom)
+df_str <- rnd_str(df, str2, pidnum)
+head(df_str)
+```
+
+Join back to dataset  
+```{r }
+df_str <- inner_join(df_str, df)
 ```
 
 ```{r, echo=F}
-table(df_str$symptom, df_str$assign)
+table(df_str$str2, df_str$group)
 ```
+Nearly equal assignment by strata=0 or strata=1 
+
+How does our stratified randomization perform vs. simple randomization?  
+We can see the how much tighter covariate differences are if we perform a simulation of 10000 randomizations under either strategy.    
+
+```{r, echo=F}
+st_run <- Sys.time()
+
+## Random Assignment - Simple  
+
+rndms <- 10000L
+#Matrix of values  
+rnd_mn_diff <- matrix(nrow = rndms, ncol = length(vars))  
+seeds <- sample(-100000:100000, rndms)
+
+for (i in 1:rndms) {
+  
+  rnd_id <- df$pidnum
+  
+  set.seed(seeds[i])
+  
+  df_iter <- bind_cols(df[, vars], rnd_allot(rnd_id)[, 2]) %>%
+    as.data.frame(.)
+  
+  mn_diff_i <- (colMeans(df_iter[df_iter$group=='a', vars]) - 
+                colMeans(df_iter[df_iter$group=='b', vars])) / 
+                (lapply(df_iter[, vars], sd) %>% unlist(.))
+  
+  rnd_mn_diff[i, ] <- mn_diff_i
+}
+st_end <- Sys.time()
+
+cat(paste0(rndms), 'randomizations for Random Assignment - Simple \n ')
+st_end - st_run
+```
+
+```{r, echo=F}
+st_run <- Sys.time()
+
+## Random assignment - Stratification, one var  
+rndms <- 10000L
+#Matrix of values  
+srt_mn_diff <- matrix(nrow = rndms, ncol = length(vars))  
+seeds <- sample(-100000:100000, rndms)
+
+for (i in 1:rndms) {
+  
+ 
+  set.seed(seeds[i])
+  
+  df_str <- rnd_str(df, str2, pidnum)
+  df_iter <- inner_join(df_str, df, by=c('str2', 'pidnum'))
+
+  
+  mn_diff_i <- (colMeans(df_iter[df_iter$group=='a', vars]) - 
+                colMeans(df_iter[df_iter$group=='b', vars])) / 
+                (lapply(df_iter[, vars], sd) %>% unlist(.))
+  
+  srt_mn_diff[i, ] <- mn_diff_i
+}
+st_end <- Sys.time()
+
+cat(paste0(rndms), 'randomizations for Stratification, one var \n')
+st_end - st_run
+```
+
+```{r, echo=F}
+rnd_mn_diff <- rnd_mn_diff %>%
+  as.data.frame(.) %>%
+  mutate(random = 'simple')
+
+srt_mn_diff <- srt_mn_diff %>%
+  as.data.frame(.) %>%
+  mutate(random = 'stratified')
+
+md_diff <- bind_rows(rnd_mn_diff, srt_mn_diff) %>%
+  mutate(random = factor(random))
+
+colnames(md_diff) <- c(vars, 'random')
+
+md_diff_grp <- gather(md_diff, key = 'var', value = 'x', -random)
+
+ggplot(md_diff_grp, 
+       aes(x=factor(var), y=x, fill = random)) +
+  geom_boxplot() +
+  xlab('Standardized Mean Difference Between Groups') +
+  ylab('Variable') +
+  coord_flip()
+```
+As you can see, stratification is very effective at tightening a simple strata variable.
+
+What about a continuous measure age? You can stratify by category:   
+```{r, echo=F}
+st_run <- Sys.time()
+
+## Random assignment - continuous categorized  
+rndms <- 10000L
+#Matrix of values  
+srt_mn_diff <- matrix(nrow = rndms, ncol = length(vars))  
+seeds <- sample(-100000:100000, rndms)
+
+df <- df %>%
+  mutate(age_cat = ntile(age, 5))
+
+for (i in 1:rndms) {
+  
+ 
+  set.seed(seeds[i])
+  
+  df_str <- rnd_str(df, age_cat, pidnum)
+  df_iter <- inner_join(df_str, df, by=c('age_cat', 'pidnum'))
+
+  
+  mn_diff_i <- (colMeans(df_iter[df_iter$group=='a', vars]) - 
+                colMeans(df_iter[df_iter$group=='b', vars])) / 
+                (lapply(df_iter[, vars], sd) %>% unlist(.))
+  
+  srt_mn_diff[i, ] <- mn_diff_i
+}
+st_end <- Sys.time()
+
+cat(paste0(rndms), 'randomizations for - continuous categorized \n')
+st_end - st_run
+```
+
+```{r, echo=F}
+rnd_mn_diff <- rnd_mn_diff %>%
+  as.data.frame(.) %>%
+  mutate(random = 'simple')
+
+srt_mn_diff <- srt_mn_diff %>%
+  as.data.frame(.) %>%
+  mutate(random = 'stratified')
+
+md_diff <- bind_rows(rnd_mn_diff, srt_mn_diff) %>%
+  mutate(random = factor(random))
+
+colnames(md_diff) <- c(vars, 'random')
+md_diff_grp <- gather(md_diff, key = 'var', value = 'x', -random)
+
+ggplot(md_diff_grp, 
+       aes(x=factor(var), y=x, fill = random)) +
+  geom_boxplot() +
+  xlab('Standardized Mean Difference Between Groups') +
+  ylab('Variable') +
+  coord_flip()
+```
+Works pretty well!  
+
+If these variables are strongly correlated with outcome then you will see some reduction in variance, but re-randomization will work better if you have a large number of predictors with weak associations with the outcome.  
+
+## Multivariate stratification  
+An additional option is to create multiple strata, but this can get complicated and runs into issues with finite numbers in individual cells. It is dependent on sample size, but usually is not feasible to do more than 1:3 stratifications.  
+
+The alternative to a single stratification, is to use a multivariate balance measure, create arbitrary strata (since its a continuous measure) and randomly assign within strata.  
+
+### Mahalanobis computation  
+In this case we are computing the distance of each observation from the group mean.  
+
+$$ M \equiv ({X_i} - \bar{X}) ' cov(X)^{-1} ({X_i} - \bar{X}) $$
+
+```{r }
+df_mdis <- select(df, vars) %>% 
+  as.matrix(.) 
+
+mdis_vals <- Rfast::mahala(df_mdis, colMeans(df_mdis), sigma=cov(df_mdis))
+
+df_mstr <- df %>%
+  mutate(mdis = mdis_vals, #M-distance values  
+         mdis_cat = ntile(mdis, 4)) # categories M-distance
+```
+
+```{r, echo=F}
+df_mstr %>%
+  select(pidnum, mdis, mdis_cat) %>%
+  distinct(.) %>%
+  ggplot(., aes(factor(mdis_cat), mdis)) +
+  geom_boxplot(color = 'darkblue', fill = 'lightblue') +
+  xlab('Strata: M-distance') + ylab('M-distance')
+```
+
+```{r, echo=F}
+st_run <- Sys.time()
+## Random assignment - Stratification  
+rndms <- 10000L
+#Matrix of values  
+srt_mn_diff <- matrix(nrow = rndms, ncol = length(vars))  
+seeds <- sample(-100000:100000, rndms)
+
+for (i in 1:rndms) {
+  
+  set.seed(seeds[i])
+  
+  df_str <- rnd_str(df_mstr, mdis_cat, pidnum)
+  df_iter <- inner_join(df_str, df_mstr, by=c('mdis_cat', 'pidnum'))
+
+  
+  mn_diff_i <- (colMeans(df_iter[df_iter$group=='a', vars]) - 
+                colMeans(df_iter[df_iter$group=='b', vars])) / 
+                (lapply(df_iter[, vars], sd) %>% unlist(.))
+  
+  srt_mn_diff[i, ] <- mn_diff_i
+}
+st_end <- Sys.time()
+
+cat(paste0(rndms), 'randomizations for M-distance stratification \n')
+st_end - st_run
+```
+
+```{r, echo=F}
+rnd_mn_diff <- rnd_mn_diff %>%
+  as.data.frame(.) %>%
+  mutate(random = 'simple')
+
+srt_mn_diff <- srt_mn_diff %>%
+  as.data.frame(.) %>%
+  mutate(random = 'stratified')
+
+md_diff <- bind_rows(rnd_mn_diff, srt_mn_diff) %>%
+  mutate(random = factor(random))
+
+colnames(md_diff) <- c(vars, 'random')
+
+md_diff_grp <- gather(md_diff, key = 'var', value = 'x', -random)
+
+ggplot(md_diff_grp, 
+       aes(x=factor(var), y=x, fill = random)) +
+  geom_boxplot() +
+  xlab('Standardized Mean Difference Between Groups') +
+  ylab('Variable') +
+  coord_flip()
+```
+Not significantly different from simple randomization!  
+
+```{r }
+cmat <- df[, vars] %>%
+  cor(.) %>%
+  round(., 2)
+
+cmat
+```
+```{r, echo=F}
+# Get lower triangle of the correlation matrix
+  get_lower_tri<-function(cormat){
+    cormat[upper.tri(cormat)] <- NA
+    return(cormat)
+  }
+  # Get upper triangle of the correlation matrix
+  get_upper_tri <- function(cormat){
+    cormat[lower.tri(cormat)]<- NA
+    return(cormat)
+  }
+  reorder_cormat <- function(cormat){
+# Use correlation between variables as distance
+dd <- as.dist((1-cormat)/2)
+hc <- hclust(dd)
+cormat <-cormat[hc$order, hc$order]
+  }
+  
+upper_tri <- get_upper_tri(cmat)
+melted_cmat <- reshape2::melt(upper_tri)
+
+# Reorder the correlation matrix
+cormat <- reorder_cormat(cmat)
+upper_tri <- get_upper_tri(cmat)
+# Melt the correlation matrix
+melted_cormat <- reshape2::melt(upper_tri, na.rm = TRUE)
+# Create a ggheatmap
+ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value))+
+ geom_tile(color = "white")+
+ scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+    name="Pearson\nCorrelation") +
+  theme_minimal()+ # minimal theme
+ theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+    size = 12, hjust = 1))+
+ coord_fixed()
+# Print the heatmap
+print(ggheatmap)
+```
+Notice how most variables have very weak correlations? This is why the stratified 
+analysis with a Mahalanobis distance doesn't perform better than simple randomization. The Mahalanobis distance is an absolute measure from the covariate means, so it balances groups well when covariates are highly correlated (i.e. units grouped together by distance have similar values). But if each variable randomly varies from the mean, then using distance will not balance the groups more than simple randomization. For example, two units could be wildly different by characteristics but technically have the same distance from the means. The only variable which balances at all is MSM which is correlated a little with gender. 
+
+If we repeat the analysis using MSM, Hemo, gender, and age.  
+
+```{r }
+m_vars <- c('msm', 'hemo', 'gender', 'race')
+df_mdis <- select(df, m_vars) %>% 
+  as.matrix(.) 
+
+mdis_vals <- Rfast::mahala(df_mdis, colMeans(df_mdis), sigma=cov(df_mdis))
+
+df_mstr <- df %>%
+  mutate(mdis = mdis_vals, #M-distance values  
+         mdis_cat = ntile(mdis, 10)) # categories M-distance
+```
+
+```{r, echo=F}
+df_mstr %>%
+  select(pidnum, mdis, mdis_cat) %>%
+  distinct(.) %>%
+  ggplot(., aes(factor(mdis_cat), mdis)) +
+  geom_boxplot(color = 'darkblue', fill = 'lightblue') +
+  xlab('Strata: M-distance') + ylab('M-distance')
+```
+
+Mahalanobis distance using only 4 moderately correlated variables.  
+
+```{r, echo=F}
+st_run <- Sys.time()
+## Random assignment - Stratification  
+rndms <- 10000L
+#Matrix of values  
+srt_mn_diff <- matrix(nrow = rndms, ncol = length(vars))  
+seeds <- sample(-100000:100000, rndms)
+
+for (i in 1:rndms) {
+  
+  set.seed(seeds[i])
+  
+  df_str <- rnd_str(df_mstr, mdis_cat, pidnum)
+  df_iter <- inner_join(df_str, df_mstr, by=c('mdis_cat', 'pidnum'))
+
+  
+  mn_diff_i <- (colMeans(df_iter[df_iter$group=='a', vars]) - 
+                colMeans(df_iter[df_iter$group=='b', vars])) / 
+                (lapply(df_iter[, vars], sd) %>% unlist(.))
+  
+  srt_mn_diff[i, ] <- mn_diff_i
+}
+
+cat(paste0(rndms), 'randomizations for M-distance stratification \n')
+st_end - st_run
+```
+
+```{r, echo=F}
+srt_mn_diff <- srt_mn_diff %>%
+  as.data.frame(.) %>%
+  mutate(random = 'stratified')
+
+md_diff <- bind_rows(rnd_mn_diff, srt_mn_diff) %>%
+  mutate(random = factor(random))
+
+colnames(md_diff) <- c(vars, 'random')
+
+md_diff_grp <- gather(md_diff, key = 'var', value = 'x', -random)
+
+ggplot(md_diff_grp, 
+       aes(x=factor(var), y=x, fill = random)) +
+  geom_boxplot() +
+  xlab('Standardized Mean Difference Between Groups') +
+  ylab('Variable') +
+  coord_flip()
+```
+See how the distance measure performs better when selecting a few correlated variables?
 
 # Contacting authors  
 The primary author of the package was Kevin W. McConeghy. [See here](https://github.com/kmcconeghy/)

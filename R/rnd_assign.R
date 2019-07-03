@@ -18,7 +18,7 @@
 #' @examples
 #' require(jumble)
 #' x <- 1:100
-#' rnd_assign(x, 2, as.integer(ymd('2016-01-01')))
+#' rnd_assign(x, 2, as.integer(as.Date('2016-01-01')))
 #'
 #' @import tidyverse stats
 rnd_assign <- function(x, k, seed=NULL) {

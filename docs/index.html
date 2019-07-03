@@ -61,6 +61,9 @@
     <li>
       <a href="articles/03-assignment.html">jumble: Random assignment</a>
     </li>
+    <li>
+      <a href="articles/04-stratification.html">jumble: Stratified Randomization</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -86,7 +89,7 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-<p><img src="jumble_hexasticker.jpg" title="hex sticker thumb" alt="jumble" style="display: block; align=" right width="565" height="382"></p>
+<p>&lt;img src=“jumble_hexasticker.jpg” title=“hex sticker thumb” alt=“jumble” style=“display: block; align=”right" width=“565” height=“382” /&gt;</p>
 <div id="jumble-an-r-package-to-perform-stratified-and-re-randomization-procedures-and-assess-covariate-balance" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#jumble-an-r-package-to-perform-stratified-and-re-randomization-procedures-and-assess-covariate-balance" class="anchor"></a>jumble: An R Package to perform stratified and re-randomization procedures and assess covariate balance</h1></div>
@@ -105,9 +108,9 @@
 <h1 class="hasAnchor">
 <a href="#or-the-the-development-version-from-github" class="anchor"></a>Or the the development version from GitHub:</h1>
 </div>
-<div id="install-packagesdevtools" class="section level1">
+<div id="installpackagesdevtools" class="section level1">
 <h1 class="hasAnchor">
-<a href="#install-packagesdevtools" class="anchor"></a>install.packages(“devtools”)</h1>
+<a href="#installpackagesdevtools" class="anchor"></a>install.packages(“devtools”)</h1>
 <p><code>{r, eval=F} devtools::install_github("kmcconeghy/jumble")</code> This package relies heavily on the suite of packages and programming termed “Tidyverse”, and “data.table” e.g. that must be installed for proper functioning.</p>
 </div>
 <div id="usage" class="section level1">
@@ -118,7 +121,17 @@
 <div id="vignettes" class="section level1">
 <h1 class="hasAnchor">
 <a href="#vignettes" class="anchor"></a>Vignettes</h1>
-<p>Companion documents have been written to assist interested readers with the background and use of the package. <code>{r, eval=F} vignette("01-mahalanobis", "rerand")</code></p>
+<p>Companion documents have been written to assist interested readers with the background and use of the package.</p>
+<ul>
+<li><p>Mahalanobis distance measures<br>
+This explains one of common measures used to demonstrate covariate balance and how it can be deployed in randomization procedures<br><code>{r, eval=F} vignette("01-mahalanobis", "jumble")</code></p></li>
+<li><p>Re-randomization<br>
+Goes over a particular re-randomization method using the Mahalanobis distance measures<br><code>{r, eval=F} vignette("02-rerand", "jumble")</code></p></li>
+<li><p>Assignment<br>
+Explains some of the underlying sampling functions which drive randomization<br><code>{r, eval=F} vignette("03-assignment", "jumble")</code></p></li>
+<li><p>Stratification<br>
+Examples for how to perform stratified randomizations<br><code>{r, eval=F} vignette("04-stratification", "jumble")</code></p></li>
+</ul>
 </div>
 <div id="latest-version-updates" class="section level1">
 <h1 class="hasAnchor">
