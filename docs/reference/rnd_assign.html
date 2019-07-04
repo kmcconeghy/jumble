@@ -163,8 +163,21 @@ one of many groups</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>require</a></span>(<span class='no'>jumble</span>)
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>100</span>
-<span class='fu'>rnd_assign</span>(<span class='no'>x</span>, <span class='fl'>2</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/integer'>as.integer</a></span>(<span class='fu'>ymd</span>(<span class='st'>'2016-01-01'</span>)))</div><div class='output co'>#&gt; <span class='error'>Error in ymd("2016-01-01"): could not find function "ymd"</span></div><div class='input'>
-</div></pre>
+<span class='fu'>rnd_assign</span>(<span class='no'>x</span>, <span class='fl'>2</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/integer'>as.integer</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/as.Date'>as.Date</a></span>(<span class='st'>'2016-01-01'</span>)))</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 100 x 2</span><span>
+#&gt;       id group
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>
+#&gt; </span><span style='color: #555555;'> 1</span><span>     1 a    
+#&gt; </span><span style='color: #555555;'> 2</span><span>     2 b    
+#&gt; </span><span style='color: #555555;'> 3</span><span>     3 b    
+#&gt; </span><span style='color: #555555;'> 4</span><span>     4 b    
+#&gt; </span><span style='color: #555555;'> 5</span><span>     5 b    
+#&gt; </span><span style='color: #555555;'> 6</span><span>     6 b    
+#&gt; </span><span style='color: #555555;'> 7</span><span>     7 a    
+#&gt; </span><span style='color: #555555;'> 8</span><span>     8 b    
+#&gt; </span><span style='color: #555555;'> 9</span><span>     9 b    
+#&gt; </span><span style='color: #555555;'>10</span><span>    10 a    
+#&gt; </span><span style='color: #555555;'># ... with 90 more rows</span><span></div><div class='input'>
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

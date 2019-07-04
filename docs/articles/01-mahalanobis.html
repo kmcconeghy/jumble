@@ -61,6 +61,9 @@
     <li>
       <a href="../articles/03-assignment.html">jumble: Random assignment</a>
     </li>
+    <li>
+      <a href="../articles/04-stratification.html">jumble: Stratified Randomization</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -89,7 +92,7 @@
       <h1>jumble: Mahalanobis distance</h1>
                         <h4 class="author">Kevin W. McConeghy</h4>
             
-            <h4 class="date">2019-06-29</h4>
+            <h4 class="date">2019-07-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/kmcconeghy/jumble/blob/master/vignettes/01-mahalanobis.Rmd"><code>vignettes/01-mahalanobis.Rmd</code></a></small>
       <div class="hidden name"><code>01-mahalanobis.Rmd</code></div>
@@ -106,7 +109,7 @@
 <div id="example-dataset" class="section level3">
 <h3 class="hasAnchor">
 <a href="#example-dataset" class="anchor"></a>Example dataset</h3>
-<p>The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.<span class="citation">(Hammer SM 1996)</span> See: ?jumble::ACTG175</p>
+<p>The example dataset used in this package is freely available and comes from a clinical HIV therapy trial conducted in the 1990s.<span class="citation">(Hammer SM 1996)</span> See: ?jumble::ACTG175</p>
 <div id="load-dataset" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-dataset" class="anchor"></a>Load dataset</h4>
@@ -224,10 +227,10 @@ X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="
 <pre><code>## [1] TRUE</code></pre>
 <p>All functions provide nearly equal answers.</p>
 <pre><code>## Unit: microseconds
-##    expr      min        lq       mean   median       uq      max neval
-##  jumble 1136.690 1241.4740 1490.71560 1305.485 1605.367 6893.798  1000
-##   rbase  109.899  122.4670  147.11825  134.743  161.341  292.284  1000
-##   rfast   14.030   20.4605   31.43449   28.059   40.774  118.667  1000</code></pre>
+##    expr      min       lq       mean   median       uq      max neval
+##  jumble 1121.199 1147.798 1244.80933 1170.596 1202.601 4689.396  1000
+##   rbase  106.392  116.329  123.72710  120.421  124.805  242.888  1000
+##   rfast   13.738   17.245   22.20128   22.798   23.676   77.748  1000</code></pre>
 <p>Rfast blows away competition!</p>
 <p>Typically you would take the square root of this distance, but that is not necessary for our purposes.</p>
 <p>When performing a stratified analysis, M-distance can be used to construct the strata and perform a permuted block randomization.</p>
@@ -252,9 +255,9 @@ X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="
 )</code></pre></div>
 <pre><code>## Unit: microseconds
 ##   expr      min       lq       mean   median        uq       max neval
-##   mine 7314.102 7946.311 11931.8839 8843.329 13428.819 87730.057  1000
-##  rfast  234.412  251.949   318.1535  293.599   360.678   840.316  1000
-##  rbase  385.522  417.381   536.7105  519.388   603.273  1274.064  1000</code></pre>
+##   mine 6967.746 7237.524 10197.8838 7439.053 12113.105 73970.812  1000
+##  rfast  228.566  239.673   268.8631  258.525   291.407   499.220  1000
+##  rbase  372.369  401.451   451.0489  444.563   485.337   877.435  1000</code></pre>
 <p>My handwritten code is very in-efficient, Rfast outperforms the base code.<br>
 In the re-randomization procedures, the R-fast computation is used for speed. Unit testing is in place to ensure the Mahalanobis calculations are consistent across Rfast, Base R and the manual computations for version control and reproducibility.</p>
 </div>

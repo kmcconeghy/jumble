@@ -61,6 +61,9 @@
     <li>
       <a href="../articles/03-assignment.html">jumble: Random assignment</a>
     </li>
+    <li>
+      <a href="../articles/04-stratification.html">jumble: Stratified Randomization</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -83,17 +86,13 @@
 <!--/.navbar -->
 
       
-      </header><script src="02-rerand_files/htmlwidgets-1.3/htmlwidgets.js"></script><script src="02-rerand_files/jquery-1.12.4/jquery.min.js"></script><link href="02-rerand_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="02-rerand_files/datatables-binding-0.7/datatables.js"></script><link href="02-rerand_files/dt-core-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="02-rerand_files/dt-core-1.10.16/css/jquery.dataTables.extra.css" rel="stylesheet">
-<script src="02-rerand_files/dt-core-1.10.16/js/jquery.dataTables.min.js"></script><link href="02-rerand_files/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet">
-<script src="02-rerand_files/crosstalk-1.0.0/js/crosstalk.min.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>jumble: Re-randomization approach</h1>
                         <h4 class="author">Kevin W. McConeghy</h4>
             
-            <h4 class="date">2019-06-29</h4>
+            <h4 class="date">2019-07-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/kmcconeghy/jumble/blob/master/vignettes/02-rerand.Rmd"><code>vignettes/02-rerand.Rmd</code></a></small>
       <div class="hidden name"><code>02-rerand.Rmd</code></div>
@@ -118,7 +117,7 @@
 <div id="example-dataset" class="section level3">
 <h3 class="hasAnchor">
 <a href="#example-dataset" class="anchor"></a>Example dataset</h3>
-<p>The example dataset used in this package is freely available and comes from a clinical AIDs trial conducted in the 1990s.<span class="citation">(Hammer SM 1996)</span> See: ?jumble::ACTG175</p>
+<p>The example dataset used in this package is freely available and comes from a clinical HIV therapy trial conducted in the 1990s.<span class="citation">(Hammer SM 1996)</span> See: ?jumble::ACTG175</p>
 <div id="load-dataset" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-dataset" class="anchor"></a>Load dataset</h4>
@@ -201,7 +200,7 @@ chi_val &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdoc
 sims &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">sapply</a></span>(seed_list, <span class="cf">function</span>(x) <span class="kw">permute_m</span>(df, vars, x)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/unlist">unlist</a></span>(.)</code></pre></div>
 <p><img src="02-rerand_files/figure-html/unnamed-chunk-9-1.png" width="576"></p>
-<p>We can see from the empirical distribution that M ~ 8 is about average for achieving balance. So the trial had a decent randomization but it could have been better, the empirical distribution suggests an acceptance probability of 0.001 is seen at M values of 1.3987 or lower.</p>
+<p>We can see from the empirical distribution that M ~ 8 is about average for achieving balance. So the trial had a decent randomization but it could have been better, the empirical distribution suggests an acceptance probability of 0.001 is seen at M values of 1.5255 or lower.</p>
 <p>At this point we have completed steps 1-3, we have our entire cohort, a list of covariates, and a defined criterion for accepting a randomization.<br>
 Now we must conduct the re-randomization procedure…</p>
 </div>
@@ -218,14 +217,134 @@ tst_run &lt;-<span class="st"> </span><span class="kw">microbenchmark</span>(
   <span class="dt">times=</span>runs, <span class="dt">unit =</span> <span class="st">'s'</span>)
 
 avg_run_s&lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(tst_run<span class="op">$</span>time <span class="op">/</span><span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">9</span>) <span class="op">/</span><span class="st"> </span>runs, <span class="dv">3</span>) </code></pre></div>
-<pre><code>## Average runtime in seconds to find 1 acceptable randomization: 1.897</code></pre>
+<pre><code>## Average runtime in seconds to find 1 acceptable randomization: 1.117</code></pre>
 <p>A single restricted randomization looks favorable compared with the trial result:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">re_rand &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rnd_rerand.html">rnd_rerand</a></span>(<span class="dt">x =</span> df[, vars],
                       <span class="dt">cutoff =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/quantile">quantile</a></span>(sims, <span class="fl">0.001</span>),
                       <span class="dt">seed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/integer">as.integer</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.Date">as.Date</a></span>(<span class="st">'2019-06-28'</span>)))</code></pre></div>
-<p><em>Example Table 1. Actual trial randomization</em><br></p>
-<div id="htmlwidget-66c28c7a72f575449769" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-66c28c7a72f575449769">{"x":{"filter":"none","data":[["age","race","gender","symptom","wtkg","hemo","msm","drugs","karnof","oprior","Average","Std. Dev."],[" 35","0.29","0.81","0.17"," 76","0.079","0.64","0.12"," 95","0.03"," NA"," NA"],[" 35","0.26","0.83","0.18"," 75","0.082","0.66","0.14"," 96","0.017"," NA"," NA"],["-0.00049","0.064","-0.051","-0.044","0.089","-0.013","-0.046","-0.064","-0.018","0.084","0.00025","0.058"],[" 35","0.28","0.82","0.17"," 76","0.082","0.65","0.13"," 95","0.025"," NA"," NA"],[" 35","0.28","0.83","0.18"," 75","0.08","0.66","0.12"," 96","0.023"," NA"," NA"],["-0.0056","0.017","-0.03","-0.015","0.011","0.007","-0.028","0.034","-0.039","0.012","-0.0035","0.024"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Group a (trial)<\/th>\n      <th>Group b (trial)<\/th>\n      <th>Trial Mean Std. Diff<\/th>\n      <th>Group a (re-rand)<\/th>\n      <th>Group b (re-rand)<\/th>\n      <th>Re-rand. Mean Std. Diff<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"order":[],"autoWidth":false,"orderClasses":false,"columnDefs":[{"orderable":false,"targets":0}]}},"evals":[],"jsHooks":[]}</script><p>The average standardized mean difference between groups is ~ 0 for the trial and the re-randomizations. This is expected, randomization is designed to achieve a value of zero in the mean difference of covariates between assigned groups, i.e. (T =1 | E[X]) - (T=0 | E[X]) = 0. But what is notable is that re-randomization achieves a significant reduction in the variance! moving from 0.058 to 0.0237, a reduction of 41%.</p>
+<p><em>Example Table 1. Actual trial randomization</em></p>
+<table class="table">
+<thead><tr class="header">
+<th></th>
+<th align="left">Group a (trial)</th>
+<th align="left">Group b (trial)</th>
+<th align="left">Trial Mean Std. Diff</th>
+<th align="left">Group a (re-rand)</th>
+<th align="left">Group b (re-rand)</th>
+<th align="left">Re-rand. Mean Std. Diff</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>age</td>
+<td align="left">35</td>
+<td align="left">35</td>
+<td align="left">-0.00049</td>
+<td align="left">35</td>
+<td align="left">35</td>
+<td align="left">-0.0056</td>
+</tr>
+<tr class="even">
+<td>race</td>
+<td align="left">0.29</td>
+<td align="left">0.26</td>
+<td align="left">0.064</td>
+<td align="left">0.28</td>
+<td align="left">0.28</td>
+<td align="left">0.017</td>
+</tr>
+<tr class="odd">
+<td>gender</td>
+<td align="left">0.81</td>
+<td align="left">0.83</td>
+<td align="left">-0.051</td>
+<td align="left">0.82</td>
+<td align="left">0.83</td>
+<td align="left">-0.03</td>
+</tr>
+<tr class="even">
+<td>symptom</td>
+<td align="left">0.17</td>
+<td align="left">0.18</td>
+<td align="left">-0.044</td>
+<td align="left">0.17</td>
+<td align="left">0.18</td>
+<td align="left">-0.015</td>
+</tr>
+<tr class="odd">
+<td>wtkg</td>
+<td align="left">76</td>
+<td align="left">75</td>
+<td align="left">0.089</td>
+<td align="left">76</td>
+<td align="left">75</td>
+<td align="left">0.011</td>
+</tr>
+<tr class="even">
+<td>hemo</td>
+<td align="left">0.079</td>
+<td align="left">0.082</td>
+<td align="left">-0.013</td>
+<td align="left">0.082</td>
+<td align="left">0.08</td>
+<td align="left">0.007</td>
+</tr>
+<tr class="odd">
+<td>msm</td>
+<td align="left">0.64</td>
+<td align="left">0.66</td>
+<td align="left">-0.046</td>
+<td align="left">0.65</td>
+<td align="left">0.66</td>
+<td align="left">-0.028</td>
+</tr>
+<tr class="even">
+<td>drugs</td>
+<td align="left">0.12</td>
+<td align="left">0.14</td>
+<td align="left">-0.064</td>
+<td align="left">0.13</td>
+<td align="left">0.12</td>
+<td align="left">0.034</td>
+</tr>
+<tr class="odd">
+<td>karnof</td>
+<td align="left">95</td>
+<td align="left">96</td>
+<td align="left">-0.018</td>
+<td align="left">95</td>
+<td align="left">96</td>
+<td align="left">-0.039</td>
+</tr>
+<tr class="even">
+<td>oprior</td>
+<td align="left">0.03</td>
+<td align="left">0.017</td>
+<td align="left">0.084</td>
+<td align="left">0.025</td>
+<td align="left">0.023</td>
+<td align="left">0.012</td>
+</tr>
+<tr class="odd">
+<td>Average</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">0.00025</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">-0.0035</td>
+</tr>
+<tr class="even">
+<td>Std. Dev.</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">0.058</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">0.024</td>
+</tr>
+</tbody>
+</table>
+<p>The average standardized mean difference between groups is ~ 0 for the trial and the re-randomizations. This is expected, randomization is designed to achieve a value of zero in the mean difference of covariates between assigned groups, i.e. (T =1 | E[X]) - (T=0 | E[X]) = 0. But what is notable is that re-randomization achieves a significant reduction in the variance! moving from 0.058 to 0.0237, a reduction of 41%.</p>
 <p>This reduction in variance is the driver behind re-randomization’s ability to significantly increase study power to detect a difference. As long as the primary outcome is evaluated using a randomization or a ‘permutation’ test which has the same criteria as re-randomization, the test statistic will have more narrow confidence intervals than a comparable test using standard parametric assumptions. <span class="citation">Morgan KL (2015)</span></p>
 <p>The trade is computation time, you have to perform ~1000 randomizations to find an acceptable one at Pa =0.0001. But if it takes 1-3 seconds to find an acceptable randomization. It could take you several minutes at least to find enough permutations of those acceptable draws. If each analysis is a complex regression which itself takes several seconds - minutes, you could be waiting a long time….</p>
 <p>We can see the how much tighter covariate differences are if we perform a simulation of 1000 randomizations under either strategy.</p>
