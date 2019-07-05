@@ -200,7 +200,7 @@ chi_val &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdoc
 sims &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">sapply</a></span>(seed_list, <span class="cf">function</span>(x) <span class="kw">permute_m</span>(df, vars, x)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/unlist">unlist</a></span>(.)</code></pre></div>
 <p><img src="02-rerand_files/figure-html/unnamed-chunk-9-1.png" width="576"></p>
-<p>We can see from the empirical distribution that M ~ 8 is about average for achieving balance. So the trial had a decent randomization but it could have been better, the empirical distribution suggests an acceptance probability of 0.001 is seen at M values of 1.5255 or lower.</p>
+<p>We can see from the empirical distribution that M ~ 8 is about average for achieving balance. So the trial had a decent randomization but it could have been better, the empirical distribution suggests an acceptance probability of 0.001 is seen at M values of 1.4976 or lower.</p>
 <p>At this point we have completed steps 1-3, we have our entire cohort, a list of covariates, and a defined criterion for accepting a randomization.<br>
 Now we must conduct the re-randomization procedure…</p>
 </div>
@@ -217,7 +217,7 @@ tst_run &lt;-<span class="st"> </span><span class="kw">microbenchmark</span>(
   <span class="dt">times=</span>runs, <span class="dt">unit =</span> <span class="st">'s'</span>)
 
 avg_run_s&lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(tst_run<span class="op">$</span>time <span class="op">/</span><span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">9</span>) <span class="op">/</span><span class="st"> </span>runs, <span class="dv">3</span>) </code></pre></div>
-<pre><code>## Average runtime in seconds to find 1 acceptable randomization: 1.117</code></pre>
+<pre><code>## Average runtime in seconds to find 1 acceptable randomization: 0.981</code></pre>
 <p>A single restricted randomization looks favorable compared with the trial result:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">re_rand &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rnd_rerand.html">rnd_rerand</a></span>(<span class="dt">x =</span> df[, vars],
                       <span class="dt">cutoff =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/quantile">quantile</a></span>(sims, <span class="fl">0.001</span>),

@@ -228,9 +228,9 @@ X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="
 <p>All functions provide nearly equal answers.</p>
 <pre><code>## Unit: microseconds
 ##    expr      min       lq       mean   median       uq      max neval
-##  jumble 1121.199 1147.798 1244.80933 1170.596 1202.601 4689.396  1000
-##   rbase  106.392  116.329  123.72710  120.421  124.805  242.888  1000
-##   rfast   13.738   17.245   22.20128   22.798   23.676   77.748  1000</code></pre>
+##  jumble 1117.400 1154.227 1259.30367 1175.857 1211.808 7254.183  1000
+##   rbase  103.468  116.037  124.70185  121.005  125.682  268.025  1000
+##   rfast   13.446   16.953   22.18547   22.506   23.676   65.179  1000</code></pre>
 <p>Rfast blows away competition!</p>
 <p>Typically you would take the square root of this distance, but that is not necessary for our purposes.</p>
 <p>When performing a stratified analysis, M-distance can be used to construct the strata and perform a permuted block randomization.</p>
@@ -254,10 +254,10 @@ X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="
   <span class="dt">times =</span> <span class="dv">1000</span>
 )</code></pre></div>
 <pre><code>## Unit: microseconds
-##   expr      min       lq       mean   median        uq       max neval
-##   mine 6967.746 7237.524 10197.8838 7439.053 12113.105 73970.812  1000
-##  rfast  228.566  239.673   268.8631  258.525   291.407   499.220  1000
-##  rbase  372.369  401.451   451.0489  444.563   485.337   877.435  1000</code></pre>
+##   expr      min        lq       mean    median        uq       max neval
+##   mine 6949.624 7362.0365 10375.6947 7608.8705 12299.435 73629.425  1000
+##  rfast  228.566  238.6495   275.8463  258.8175   306.606   568.199  1000
+##  rbase  373.247  392.3910   457.0419  455.0855   510.620   823.071  1000</code></pre>
 <p>My handwritten code is very in-efficient, Rfast outperforms the base code.<br>
 In the re-randomization procedures, the R-fast computation is used for speed. Unit testing is in place to ensure the Mahalanobis calculations are consistent across Rfast, Base R and the manual computations for version control and reproducibility.</p>
 </div>
