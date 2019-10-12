@@ -1,4 +1,4 @@
-<img src="jumble_hexasticker.jpg" title="hex sticker thumb" alt="jumble" style="display: block; align="right" width="565" height="382" />
+<img src="jumble_hexasticker.jpg" title="hex sticker thumb" alt="jumble" align="right" width="100" height="100" />
 
 jumble: An R Package to perform stratified and re-randomization procedures and assess covariate balance
 ===============
