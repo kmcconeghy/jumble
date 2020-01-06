@@ -29,14 +29,14 @@ rnd_str <- function(df, strata, id) {
   str_num <- nrow(distinct(df, !!enq_strata))
 
   assign <- df %>%
-    select(!!enq_strata, !!enq_id) %>%
-    group_split(!!enq_strata) %>%
-    map(~rnd_allot(.[[2]])) %>%
+    dplyr::select(!!enq_strata, !!enq_id) %>%
+    split(x=., f=.[, rlang::quo_text(enq_strata)]) %>%
+    lapply(., function(x) rnd_allot(x[[2]])) %>%
     bind_rows(.)
 
   df_return <- df %>%
-    select(!!enq_strata, !!enq_id) %>%
-    arrange(!!enq_strata, !!enq_id) %>%
+    dplyr::select(!!enq_strata, !!enq_id) %>%
+    dplyr::arrange(!!enq_strata, !!enq_id) %>%
     bind_cols(., group = assign$group)
 
   return(df_return)

@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>jumble: Mahalanobis distance • jumble</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="jumble: Mahalanobis distance">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
@@ -38,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -64,6 +65,9 @@
     <li>
       <a href="../articles/04-stratification.html">jumble: Stratified Randomization</a>
     </li>
+    <li>
+      <a href="../articles/05-simstudy.html">jumble: Simulation Study Code</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -73,7 +77,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/kmcconeghy/jumble">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -86,13 +90,14 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>jumble: Mahalanobis distance</h1>
                         <h4 class="author">Kevin W. McConeghy</h4>
             
-            <h4 class="date">2019-07-04</h4>
+            <h4 class="date">2020-01-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/kmcconeghy/jumble/blob/master/vignettes/01-mahalanobis.Rmd"><code>vignettes/01-mahalanobis.Rmd</code></a></small>
       <div class="hidden name"><code>01-mahalanobis.Rmd</code></div>
@@ -113,11 +118,11 @@
 <div id="load-dataset" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-dataset" class="anchor"></a>Load dataset</h4>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span>jumble<span class="op">::</span>ACTG175
-
-<span class="co">#Variables for balancing  </span>
-var_nms &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'age'</span>, <span class="st">'race'</span>, <span class="st">'gender'</span>, <span class="st">'symptom'</span>, <span class="st">'wtkg'</span>, <span class="st">'hemo'</span>, 
-          <span class="st">'msm'</span>, <span class="st">'drugs'</span>, <span class="st">'karnof'</span>, <span class="st">'oprior'</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">df &lt;-<span class="st"> </span>jumble<span class="op">::</span>ACTG175</a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="co">#Variables for balancing  </span></a>
+<a class="sourceLine" id="cb1-4" title="4">var_nms &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'age'</span>, <span class="st">'race'</span>, <span class="st">'gender'</span>, <span class="st">'symptom'</span>, <span class="st">'wtkg'</span>, <span class="st">'hemo'</span>, </a>
+<a class="sourceLine" id="cb1-5" title="5">          <span class="st">'msm'</span>, <span class="st">'drugs'</span>, <span class="st">'karnof'</span>, <span class="st">'oprior'</span>)</a></code></pre></div>
 </div>
 </div>
 </div>
@@ -164,38 +169,38 @@ var_nms &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdoc
 </li>
 <li>Ensure all covariates are numeric</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_mdist &lt;-<span class="st"> </span>df[,<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'arms'</span>, var_nms)] <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">map_dfr</span>(., as.numeric) </code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">df_mdist &lt;-<span class="st"> </span>df[,<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'arms'</span>, var_nms)] <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="st">  </span><span class="kw">map_dfr</span>(., as.numeric) </a></code></pre></div>
 </div>
 <div id="sample-size-constant" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sample-size-constant" class="anchor"></a>Sample size constant</h3>
 <p><span class="math display">\[ \frac{n_tn_c}n\]</span></p>
 <p>This is easy to compute</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ssc &lt;-<span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, ]) <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, ])) <span class="op">/</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(df_mdist))</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">ssc &lt;-<span class="st"> </span>(<span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, ]) <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, ])) <span class="op">/</span><span class="st"> </span>(<span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(df_mdist))</a></code></pre></div>
 <pre><code>## Sample size constant:  263.476</code></pre>
 </div>
 <div id="covariate-means" class="section level3">
 <h3 class="hasAnchor">
 <a href="#covariate-means" class="anchor"></a>Covariate means</h3>
 <p><span class="math display">\[ \bar{X_t} - \bar{X_c}\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">X_t &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, var_nms])
-
-X_c &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, var_nms])
-
-X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="st"> </span>X_c </code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">X_t &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, var_nms])</a>
+<a class="sourceLine" id="cb6-2" title="2"></a>
+<a class="sourceLine" id="cb6-3" title="3">X_c &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, var_nms])</a>
+<a class="sourceLine" id="cb6-4" title="4"></a>
+<a class="sourceLine" id="cb6-5" title="5">X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="st"> </span>X_c </a></code></pre></div>
 <pre><code>## Difference in covariate means by treatment: 
 ##   -0.004 0.029 -0.019 -0.017 1.191 -0.003 -0.022 -0.021 -0.104 0.013</code></pre>
 </div>
 <div id="inverse-of-covariance-of-covariate-matrix" class="section level3">
 <h3 class="hasAnchor">
 <a href="#inverse-of-covariance-of-covariate-matrix" class="anchor"></a>Inverse of covariance of covariate matrix</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_cov &lt;-<span class="st"> </span>df_mdist <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>arms) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(.) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/solve">solve</a></span>(.) <span class="co"># inverse</span>
-
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(df_cov, <span class="dv">1</span>)</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">df_cov &lt;-<span class="st"> </span>df_mdist <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>arms) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cov</a></span>(.) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/base/solve.html">solve</a></span>(.) <span class="co"># inverse</span></a>
+<a class="sourceLine" id="cb8-5" title="5"></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="kw"><a href="https://rdrr.io/r/base/Round.html">round</a></span>(df_cov, <span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##         age race gender symptom wtkg hemo  msm drugs karnof oprior
 ## age     0.0  0.0    0.0     0.0  0.0  0.1  0.0   0.0    0.0    0.0
 ## race    0.0  5.9    0.0     0.2  0.0  2.6  2.3   0.1    0.0   -0.9
@@ -212,25 +217,25 @@ X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="
 <h3 class="hasAnchor">
 <a href="#bring-formula-together" class="anchor"></a>Bring formula together</h3>
 <p><span class="math display">\[ M \equiv \frac{n_tn_c}n (\bar{X_t} - \bar{X_c}) ' cov(X)^{-1} (\bar{X_t} - \bar{X_c}) \]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">M_man =<span class="st"> </span>ssc <span class="op">*</span><span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(X_delta) <span class="op">%*%</span><span class="st"> </span>(df_cov <span class="op">%*%</span><span class="st"> </span>X_delta)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(.)</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">M_man =<span class="st"> </span>ssc <span class="op">*</span><span class="st"> </span>(<span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(X_delta) <span class="op">%*%</span><span class="st"> </span>(df_cov <span class="op">%*%</span><span class="st"> </span>X_delta)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span>(.)</a></code></pre></div>
 <pre><code>## Manually computed M-distance:  8.542155</code></pre>
 <p>jumble package function <code>mdis_grps</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">M_jumb &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mdis_grps.html">mdis_grps</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, <span class="dv">2</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(df_mdist)], 
-          df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, <span class="dv">2</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(df_mdist)]) <span class="op">*</span><span class="st"> </span>ssc </code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">M_jumb &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mdis_grps.html">mdis_grps</a></span>(df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">0</span>, <span class="dv">2</span><span class="op">:</span><span class="kw"><a href="https://rdrr.io/r/base/length.html">length</a></span>(df_mdist)], </a>
+<a class="sourceLine" id="cb12-2" title="2">          df_mdist[df_mdist<span class="op">$</span>arms<span class="op">==</span><span class="dv">1</span>, <span class="dv">2</span><span class="op">:</span><span class="kw"><a href="https://rdrr.io/r/base/length.html">length</a></span>(df_mdist)]) <span class="op">*</span><span class="st"> </span>ssc </a></code></pre></div>
 <pre><code>## Jumble M-distance:  8.542155</code></pre>
 <p>There is also an R-function which can compute M-distance.</p>
 <pre><code>## Base R Mahalanobis:  8.542155</code></pre>
 <p>There is also an Rfast function using C++:</p>
 <pre><code>## Rfast Mahalanobis:  8.542155</code></pre>
 <p>Manual calculation same as Base, same as Rfast</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/all.equal">all.equal</a></span>(M_man, M_jumb, M_base, M_fast) <span class="co"># Nearly equal</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span>(M_man, M_jumb, M_base, M_fast) <span class="co"># Nearly equal</span></a></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>All functions provide nearly equal answers.</p>
 <pre><code>## Unit: microseconds
-##    expr      min       lq       mean   median       uq      max neval
-##  jumble 1117.400 1154.227 1259.30367 1175.857 1211.808 7254.183  1000
-##   rbase  103.468  116.037  124.70185  121.005  125.682  268.025  1000
-##   rfast   13.446   16.953   22.18547   22.506   23.676   65.179  1000</code></pre>
+##    expr   min     lq      mean  median      uq     max neval cld
+##  jumble 910.0 980.45 1253.4432 1023.65 1192.00 71895.0  1000   b
+##   rbase  72.7  88.10  116.5636  101.70  121.95  2249.4  1000  a 
+##   rfast   9.5  14.00   24.7162   20.50   30.45   194.4  1000  a</code></pre>
 <p>Rfast blows away competition!</p>
 <p>Typically you would take the square root of this distance, but that is not necessary for our purposes.</p>
 <p>When performing a stratified analysis, M-distance can be used to construct the strata and perform a permuted block randomization.</p>
@@ -238,7 +243,7 @@ X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="
 <p>The formula is now:</p>
 <p><span class="math display">\[ M \equiv ({X_i} - \bar{X}) ' cov(X)^{-1} ({X_i} - \bar{X}) \]</span></p>
 <p>Test all methods give equal answers:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/all.equal">all.equal</a></span>(M_man, M_base, M_fast) <span class="co"># Nearly equal</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span>(M_man, M_base, M_fast) <span class="co"># Nearly equal</span></a></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>All functions provide nearly equal answers.</p>
 </div>
@@ -246,18 +251,18 @@ X_delta &lt;-<span class="st"> </span>X_t <span class="op">-</span><span class="
 <h3 class="hasAnchor">
 <a href="#benchmarking" class="anchor"></a>Benchmarking</h3>
 <p>Because a limitation of re-randomization is computation time, it is important to have a function which can compute M-distance quickly.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(microbenchmark)
-<span class="kw">microbenchmark</span>(
-  <span class="dt">mine =</span> <span class="kw"><a href="../reference/mdis_chrt.html">mdis_chrt</a></span>(tst),
-  <span class="dt">rfast =</span> Rfast<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/Rfast/topics/mahala">mahala</a></span>(tst, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(tst), <span class="dt">sigma=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(tst)),
-  <span class="dt">rbase =</span> {<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/mahalanobis">mahalanobis</a></span>(tst, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(tst), <span class="dt">cov=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(tst))},
-  <span class="dt">times =</span> <span class="dv">1000</span>
-)</code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(microbenchmark)</a>
+<a class="sourceLine" id="cb21-2" title="2"><span class="kw">microbenchmark</span>(</a>
+<a class="sourceLine" id="cb21-3" title="3">  <span class="dt">mine =</span> <span class="kw"><a href="../reference/mdis_chrt.html">mdis_chrt</a></span>(tst),</a>
+<a class="sourceLine" id="cb21-4" title="4">  <span class="dt">rfast =</span> Rfast<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/Rfast/man/mahala.html">mahala</a></span>(tst, <span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(tst), <span class="dt">sigma=</span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cov</a></span>(tst)),</a>
+<a class="sourceLine" id="cb21-5" title="5">  <span class="dt">rbase =</span> {<span class="kw"><a href="https://rdrr.io/r/stats/mahalanobis.html">mahalanobis</a></span>(tst, <span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(tst), <span class="dt">cov=</span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cov</a></span>(tst))},</a>
+<a class="sourceLine" id="cb21-6" title="6">  <span class="dt">times =</span> <span class="dv">1000</span></a>
+<a class="sourceLine" id="cb21-7" title="7">)</a></code></pre></div>
 <pre><code>## Unit: microseconds
-##   expr      min        lq       mean    median        uq       max neval
-##   mine 6949.624 7362.0365 10375.6947 7608.8705 12299.435 73629.425  1000
-##  rfast  228.566  238.6495   275.8463  258.8175   306.606   568.199  1000
-##  rbase  373.247  392.3910   457.0419  455.0855   510.620   823.071  1000</code></pre>
+##   expr    min      lq      mean  median      uq      max neval cld
+##   mine 5055.2 5720.80 9031.9160 6165.15 9549.75 126747.7  1000   b
+##  rfast  203.7  219.45  262.9880  243.20  288.95   1198.2  1000  a 
+##  rbase  308.3  340.65  442.6604  389.50  463.30   9109.7  1000  a</code></pre>
 <p>My handwritten code is very in-efficient, Rfast outperforms the base code.<br>
 In the re-randomization procedures, the R-fast computation is used for speed. Unit testing is in place to ensure the Mahalanobis calculations are consistent across Rfast, Base R and the manual computations for version control and reproducibility.</p>
 </div>
@@ -282,6 +287,7 @@ In the re-randomization procedures, the R-fast computation is used for speed. Un
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -298,17 +304,20 @@ In the re-randomization procedures, the R-fast computation is used for speed. Un
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Kevin W. McConeghy.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

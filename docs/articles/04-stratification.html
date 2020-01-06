@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>jumble: Stratified Randomization • jumble</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="jumble: Stratified Randomization">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
@@ -38,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -64,6 +65,9 @@
     <li>
       <a href="../articles/04-stratification.html">jumble: Stratified Randomization</a>
     </li>
+    <li>
+      <a href="../articles/05-simstudy.html">jumble: Simulation Study Code</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -73,7 +77,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/kmcconeghy/jumble">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -86,13 +90,14 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>jumble: Stratified Randomization</h1>
                         <h4 class="author">Kevin W. McConeghy</h4>
             
-            <h4 class="date">2019-07-04</h4>
+            <h4 class="date">2020-01-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/kmcconeghy/jumble/blob/master/vignettes/04-stratification.Rmd"><code>vignettes/04-stratification.Rmd</code></a></small>
       <div class="hidden name"><code>04-stratification.Rmd</code></div>
@@ -114,9 +119,9 @@
 <div id="load-dataset" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-dataset" class="anchor"></a>Load dataset</h4>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span>jumble<span class="op">::</span>ACTG175  
-vars &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'age'</span>, <span class="st">'race'</span>, <span class="st">'gender'</span>, <span class="st">'symptom'</span>, <span class="st">'wtkg'</span>, 
-          <span class="st">'hemo'</span>, <span class="st">'msm'</span>, <span class="st">'drugs'</span>, <span class="st">'karnof'</span>, <span class="st">'oprior'</span>, <span class="st">'str2'</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">df &lt;-<span class="st"> </span>jumble<span class="op">::</span>ACTG175  </a>
+<a class="sourceLine" id="cb1-2" title="2">vars &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'age'</span>, <span class="st">'race'</span>, <span class="st">'gender'</span>, <span class="st">'symptom'</span>, <span class="st">'wtkg'</span>, </a>
+<a class="sourceLine" id="cb1-3" title="3">          <span class="st">'hemo'</span>, <span class="st">'msm'</span>, <span class="st">'drugs'</span>, <span class="st">'karnof'</span>, <span class="st">'oprior'</span>, <span class="st">'str2'</span>)</a></code></pre></div>
 </div>
 </div>
 </div>
@@ -128,10 +133,10 @@ vars &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocume
 <h3 class="hasAnchor">
 <a href="#identify-a-strong-predictor-of-the-primary-outcome" class="anchor"></a>Identify a strong predictor of the primary outcome</h3>
 <p>Allow the trial design is a little more complicated, we will simply look at the <code>cens</code> event (A CD4 T cell drop of 50 or more, AIDs defining event, or death).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>(cens <span class="op">~</span><span class="st"> </span>., 
-    <span class="dt">data =</span> df[, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'cens'</span>, vars)],
-    <span class="dt">family =</span> binomial) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(.)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span>(cens <span class="op">~</span><span class="st"> </span>., </a>
+<a class="sourceLine" id="cb2-2" title="2">    <span class="dt">data =</span> df[, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'cens'</span>, vars)],</a>
+<a class="sourceLine" id="cb2-3" title="3">    <span class="dt">family =</span> binomial) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(.)</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = cens ~ ., family = binomial, data = df[, c("cens", 
@@ -173,17 +178,17 @@ vars &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocume
 <h3 class="hasAnchor">
 <a href="#random-assignment-within-symptom" class="anchor"></a>Random assignment within <code>symptom</code>
 </h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_str &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rnd_str.html">rnd_str</a></span>(df, str2, pidnum)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(df_str)</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">df_str &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rnd_str.html">rnd_str</a></span>(df, str2, pidnum)</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(df_str)</a></code></pre></div>
 <pre><code>##   str2 pidnum group
 ## 1    0  10896     b
-## 2    0  10900     b
+## 2    0  10900     a
 ## 3    0  10907     b
-## 4    0  10913     b
+## 4    0  10913     a
 ## 5    0  10920     a
-## 6    0  10923     a</code></pre>
+## 6    0  10923     b</code></pre>
 <p>Join back to dataset</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_str &lt;-<span class="st"> </span><span class="kw">inner_join</span>(df_str, df)</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">df_str &lt;-<span class="st"> </span><span class="kw">inner_join</span>(df_str, df)</a></code></pre></div>
 <pre><code>## Joining, by = c("str2", "pidnum")</code></pre>
 <pre><code>##    
 ##       a   b
@@ -194,13 +199,13 @@ vars &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocume
 We can see the how much tighter covariate differences are if we perform a simulation of 10000 randomizations under either strategy.</p>
 <pre><code>## 10000 randomizations for Random Assignment - Simple 
 ## </code></pre>
-<pre><code>## Time difference of 15.67261 secs</code></pre>
+<pre><code>## Time difference of 14.18693 secs</code></pre>
 <pre><code>## 10000 randomizations for Stratification, one var</code></pre>
-<pre><code>## Time difference of 1.090006 mins</code></pre>
+<pre><code>## Time difference of 1.118263 mins</code></pre>
 <p><img src="04-stratification_files/figure-html/unnamed-chunk-9-1.png" width="700"> As you can see, stratification is very effective at tightening a simple strata variable.</p>
 <p>What about a continuous measure age? You can stratify by category:</p>
 <pre><code>## 10000 randomizations for - continuous categorized</code></pre>
-<pre><code>## Time difference of 1.17552 mins</code></pre>
+<pre><code>## Time difference of 1.181809 mins</code></pre>
 <p><img src="04-stratification_files/figure-html/unnamed-chunk-11-1.png" width="700"> Works pretty well!</p>
 <p>If these variables are strongly correlated with outcome then you will see some reduction in variance, but re-randomization will work better if you have a large number of predictors with weak associations with the outcome.</p>
 </div>
@@ -215,62 +220,50 @@ We can see the how much tighter covariate differences are if we perform a simula
 <a href="#mahalanobis-computation" class="anchor"></a>Mahalanobis computation</h3>
 <p>In this case we are computing the distance of each observation from the group mean.</p>
 <p><span class="math display">\[ M \equiv ({X_i} - \bar{X}) ' cov(X)^{-1} ({X_i} - \bar{X}) \]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_mdis &lt;-<span class="st"> </span><span class="kw">select</span>(df, vars) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(.) 
-
-mdis_vals &lt;-<span class="st"> </span>Rfast<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/Rfast/topics/mahala">mahala</a></span>(df_mdis, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_mdis), <span class="dt">sigma=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(df_mdis))
-
-df_mstr &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">mdis =</span> mdis_vals, <span class="co">#M-distance values  </span>
-         <span class="dt">mdis_cat =</span> <span class="kw">ntile</span>(mdis, <span class="dv">4</span>)) <span class="co"># categories M-distance</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">df_mdis &lt;-<span class="st"> </span><span class="kw">select</span>(df, vars) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(.) </a>
+<a class="sourceLine" id="cb15-3" title="3"></a>
+<a class="sourceLine" id="cb15-4" title="4">mdis_vals &lt;-<span class="st"> </span>Rfast<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/Rfast/man/mahala.html">mahala</a></span>(df_mdis, <span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(df_mdis), <span class="dt">sigma=</span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cov</a></span>(df_mdis))</a>
+<a class="sourceLine" id="cb15-5" title="5"></a>
+<a class="sourceLine" id="cb15-6" title="6">df_mstr &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb15-7" title="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">mdis =</span> mdis_vals, <span class="co">#M-distance values  </span></a>
+<a class="sourceLine" id="cb15-8" title="8">         <span class="dt">mdis_cat =</span> <span class="kw">ntile</span>(mdis, <span class="dv">4</span>)) <span class="co"># categories M-distance</span></a></code></pre></div>
 <p><img src="04-stratification_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <pre><code>## 10000 randomizations for M-distance stratification</code></pre>
-<pre><code>## Time difference of 1.158388 mins</code></pre>
+<pre><code>## Time difference of 1.243111 mins</code></pre>
 <p><img src="04-stratification_files/figure-html/unnamed-chunk-15-1.png" width="700"> Not significantly different from simple randomization!</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cmat &lt;-<span class="st"> </span>df[, vars] <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cor</a></span>(.) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(., <span class="dv">2</span>)
-
-cmat</code></pre></div>
-<pre><code>##           age  race gender symptom  wtkg  hemo   msm drugs karnof oprior
-## age      1.00 -0.07   0.09    0.03  0.18 -0.26  0.19  0.07  -0.11   0.06
-## race    -0.07  1.00  -0.29   -0.06 -0.06 -0.08 -0.32  0.10   0.06   0.03
-## gender   0.09 -0.29   1.00    0.06  0.22  0.11  0.61 -0.17  -0.01   0.06
-## symptom  0.03 -0.06   0.06    1.00  0.01 -0.06  0.11  0.01  -0.10   0.03
-## wtkg     0.18 -0.06   0.22    0.01  1.00 -0.09  0.15  0.00   0.03   0.00
-## hemo    -0.26 -0.08   0.11   -0.06 -0.09  1.00 -0.39 -0.09   0.09   0.02
-## msm      0.19 -0.32   0.61    0.11  0.15 -0.39  1.00 -0.24  -0.06   0.02
-## drugs    0.07  0.10  -0.17    0.01  0.00 -0.09 -0.24  1.00  -0.06  -0.04
-## karnof  -0.11  0.06  -0.01   -0.10  0.03  0.09 -0.06 -0.06   1.00  -0.06
-## oprior   0.06  0.03   0.06    0.03  0.00  0.02  0.02 -0.04  -0.06   1.00
-## str2     0.07 -0.07   0.00    0.08 -0.09  0.11 -0.02  0.01  -0.09   0.13
-##          str2
-## age      0.07
-## race    -0.07
-## gender   0.00
-## symptom  0.08
-## wtkg    -0.09
-## hemo     0.11
-## msm     -0.02
-## drugs    0.01
-## karnof  -0.09
-## oprior   0.13
-## str2     1.00</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">cmat &lt;-<span class="st"> </span>df[, vars] <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(.) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/base/Round.html">round</a></span>(., <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb18-4" title="4"></a>
+<a class="sourceLine" id="cb18-5" title="5">cmat</a></code></pre></div>
+<pre><code>##           age  race gender symptom  wtkg  hemo   msm drugs karnof oprior  str2
+## age      1.00 -0.07   0.09    0.03  0.18 -0.26  0.19  0.07  -0.11   0.06  0.07
+## race    -0.07  1.00  -0.29   -0.06 -0.06 -0.08 -0.32  0.10   0.06   0.03 -0.07
+## gender   0.09 -0.29   1.00    0.06  0.22  0.11  0.61 -0.17  -0.01   0.06  0.00
+## symptom  0.03 -0.06   0.06    1.00  0.01 -0.06  0.11  0.01  -0.10   0.03  0.08
+## wtkg     0.18 -0.06   0.22    0.01  1.00 -0.09  0.15  0.00   0.03   0.00 -0.09
+## hemo    -0.26 -0.08   0.11   -0.06 -0.09  1.00 -0.39 -0.09   0.09   0.02  0.11
+## msm      0.19 -0.32   0.61    0.11  0.15 -0.39  1.00 -0.24  -0.06   0.02 -0.02
+## drugs    0.07  0.10  -0.17    0.01  0.00 -0.09 -0.24  1.00  -0.06  -0.04  0.01
+## karnof  -0.11  0.06  -0.01   -0.10  0.03  0.09 -0.06 -0.06   1.00  -0.06 -0.09
+## oprior   0.06  0.03   0.06    0.03  0.00  0.02  0.02 -0.04  -0.06   1.00  0.13
+## str2     0.07 -0.07   0.00    0.08 -0.09  0.11 -0.02  0.01  -0.09   0.13  1.00</code></pre>
 <p><img src="04-stratification_files/figure-html/unnamed-chunk-17-1.png" width="700"> Notice how most variables have very weak correlations? This is why the stratified analysis with a Mahalanobis distance doesn’t perform better than simple randomization. The Mahalanobis distance is an absolute measure from the covariate means, so it balances groups well when covariates are highly correlated (i.e. units grouped together by distance have similar values). But if each variable randomly varies from the mean, then using distance will not balance the groups more than simple randomization. For example, two units could be wildly different by characteristics but technically have the same distance from the means. The only variable which balances at all is MSM which is correlated a little with gender.</p>
 <p>If we repeat the analysis using MSM, Hemo, gender, and age.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">m_vars &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'msm'</span>, <span class="st">'hemo'</span>, <span class="st">'gender'</span>, <span class="st">'race'</span>)
-df_mdis &lt;-<span class="st"> </span><span class="kw">select</span>(df, m_vars) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(.) 
-
-mdis_vals &lt;-<span class="st"> </span>Rfast<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/Rfast/topics/mahala">mahala</a></span>(df_mdis, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colSums">colMeans</a></span>(df_mdis), <span class="dt">sigma=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cov</a></span>(df_mdis))
-
-df_mstr &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">mdis =</span> mdis_vals, <span class="co">#M-distance values  </span>
-         <span class="dt">mdis_cat =</span> <span class="kw">ntile</span>(mdis, <span class="dv">10</span>)) <span class="co"># categories M-distance</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">m_vars &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'msm'</span>, <span class="st">'hemo'</span>, <span class="st">'gender'</span>, <span class="st">'race'</span>)</a>
+<a class="sourceLine" id="cb20-2" title="2">df_mdis &lt;-<span class="st"> </span><span class="kw">select</span>(df, m_vars) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb20-3" title="3"><span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(.) </a>
+<a class="sourceLine" id="cb20-4" title="4"></a>
+<a class="sourceLine" id="cb20-5" title="5">mdis_vals &lt;-<span class="st"> </span>Rfast<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/Rfast/man/mahala.html">mahala</a></span>(df_mdis, <span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(df_mdis), <span class="dt">sigma=</span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cov</a></span>(df_mdis))</a>
+<a class="sourceLine" id="cb20-6" title="6"></a>
+<a class="sourceLine" id="cb20-7" title="7">df_mstr &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb20-8" title="8"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">mdis =</span> mdis_vals, <span class="co">#M-distance values  </span></a>
+<a class="sourceLine" id="cb20-9" title="9">         <span class="dt">mdis_cat =</span> <span class="kw">ntile</span>(mdis, <span class="dv">10</span>)) <span class="co"># categories M-distance</span></a></code></pre></div>
 <p><img src="04-stratification_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 <p>Mahalanobis distance using only 4 moderately correlated variables.</p>
 <pre><code>## 10000 randomizations for M-distance stratification</code></pre>
-<pre><code>## Time difference of -2.88371 secs</code></pre>
+<pre><code>## Time difference of -2.589606 secs</code></pre>
 <p><img src="04-stratification_files/figure-html/unnamed-chunk-21-1.png" width="700"> See how the distance measure performs better when selecting a few correlated variables?</p>
 </div>
 </div>
@@ -291,6 +284,7 @@ df_mstr &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -307,17 +301,20 @@ df_mstr &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Kevin W. McConeghy.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

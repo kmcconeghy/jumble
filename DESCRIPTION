@@ -31,5 +31,5 @@ LazyDataCompression: xz
 BugReports: https://github.com/kmcconeghy/jumble/issues
 License: GPL-3
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))

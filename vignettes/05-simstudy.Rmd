@@ -1,0 +1,943 @@
+---
+title: "jumble: Simulation Study Code"
+author: "Kevin W. McConeghy"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{jumble: 05-simstudy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: mybib.bib
+---
+
+# Setup
+```{r setup, eval=FALSE}
+#clear
+  knitr::opts_chunk$set(warning = F, message = F)
+  source('P:\\flunm\\K1M\\flublok_pretrial\\flublok_pretrial_cfg.R')
+```
+
+## Load Cohort File 
+```{r, eval=F}
+filepath <- paste0(DataFiles, FileNames[[1, '1']])
+
+df_trial <- readRDS(filepath) %>%
+  mutate(female = if_else(mds_gender=='Female', 1L, 0L),
+         pcthmo = pcthmo / 100) 
+rw_title <- 'Base Cohort File'
+
+des_df(df_trial, rw_title, c('bene_id_18900', 'fac_id'))
+```
+
+7 Methods 
+
+1. Simple Random
+2. 2-strata randomization
+3. Pair-matched design
+4. K-means cluster, a prior covariates
+5. K-means cluster, PCA
+6. Re-randomization
+
+# Simulation Set-up 
+
+## Parameters  
+
+```{r, eval=F}
+if (F) {
+  n_rndms <- 100L
+  n_re_rndms <- 100L
+  n_permutes <- 10L
+  k_clust <- 30L
+  k_starts <- 100L
+  k_iters <- 100L
+} 
+
+if (T) {
+  n_rndms <- 10000L
+  n_re_rndms <- 1000L
+  k_clust <- 30L
+  n_permutes <- 250L
+  k_starts <- 200000L
+  k_iters <- 100L
+}
+
+pr_reject <- 0.02  
+
+st_seed <- as.integer(ymd('2019-12-26'))
+set.seed(st_seed)
+
+rndm_methods <- c('Simple Randomizations', 
+             '2-Strata randomization',
+             'Pair-matched design', 
+             'K-means, covariates',
+             'K-means, PCA',
+             'Re-randomization')
+
+#unique facility list
+df_fac <- df_trial %>%
+    pull(fac_id) %>%
+    unique(.) 
+
+cat('Starting Seed: ', st_seed, '\n')
+cat('No. of random simulations performed: ', n_rndms, '\n')
+cat('No. of permutations performed: ', n_permutes, '\n')
+```
+
+# Variable Spefications  
+
+## Select key covariates  
+
+```{r, eval=F }
+df_cov <- df_trial %>%
+  select(starts_with('fac'), "adefscore", 'dc_hosp_any',
+  "facpoor","totbeds","alzunit","anyunit" ,"paymcaid", "paymcare", "payother", "multifac", "profit" ,"hospbase","restrain" , "acuindex2",
+  "anymdex", "rn2nrs", "dchrppd", "rnhrppd", "lpnhrppd", "cnahrppd", "adm_bed", "agg_cmi_2011p", "agglocare_2011p", "agg_hosp", 
+  "agg_comm", "aggadl_2011p", "agglowcfs", "aggmidcfs", "agghighcfs", "agg_female",  "aggblack_2011p", "agghisp_2011p", "aggwhite_2011p",
+  "pcthmo", "agg_u65", "nresid", "avgage", "avgadl_2011p", "avgrugcmi_2011p", "pctlocare_2011p", "pctfem", 
+  "pctblack_2011p", "pcthisp_2011p", "pctwhite_2011p", "pctunder65", "pctlowcfs", "pctmidcfs", "pcthighcfs", "pctbedft_2011p", 
+  "pctwalking", "pctincont_bladr_2011p", "pctincont_bowel_2011p", "pctcath_2011p", "pctchf", "pcthyper", "pctschiz_bipol", 
+  "pctvent_2011p", "pctuti", "pctfall30_2011p",  "pctobese", "pctrxdep_2011p", "pctrxpsych_2011p",  "pctrxpsyoff_2011p", "NHCADL_2011p", 
+  "NHCpain_2011p", "NHCpu_2011p","obs_rehosprate", "adj_rehosprate", "obs_successfuldc",   
+  "obs_medianlos", "mds_hospptyr", "nh_days", "mdshosps"  ,   "avg_dailycensus" ,  "sd_dailycensus") %>% 
+  select_if(~!any(is.na(.))) %>%
+  na.omit(.)
+```
+
+### LASSO  
+
+```{r, eval=F, message=F, warning=F}
+library(glmnet)
+
+df_las <- df_cov %>%
+  select(-fac_id) %>%
+  model.matrix(dc_hosp_any ~ ., data=.) 
+
+cv_fit <- cv.glmnet(df_las[, -1], df_cov$dc_hosp_any, family='binomial', alpha=1, nfold = 10)
+```
+
+```{r, eval=F }
+plot(cv_fit)
+```
+
+### Covariates from LASSO  
+```{r, eval=F }
+final.vars <- coef(cv_fit, s = "lambda.min")[, 1]
+
+final.vars <- final.vars[final.vars!=0]
+final.vars <- final.vars[2:length(final.vars)] %>% #remove intercept  
+  sort(.)
+
+final.vars <- names(final.vars)
+
+final.vars
+```
+
+mdshosps / mds_hospptyr / fac_hosp_num are all very similar so just lept mds_hospptyr.  
+
+```{r, echo=F}
+fac_key_vars <- c('pcthmo', 'agghighcfs', 'obs_rehosprate', 'acuindex2', 'mds_hospptyr', 
+                  'fac_ls', 'fac_age_85', 'fac_white', 'fac_black', 'fac_diet', 'fac_dem')
+fac_key_lbls <- c('% HMO', 'Agg. High CFS', 'Obs. Rehosp. rate', 'Acuity Index', 'MDS Hosp / pt/ yr', 
+                  'No. long-stay', 'LS Hosp. Rate', '% Age 85', '% White', '% Black', '% HMO', '% Mech. Diet', '% Dementia')
+
+cat('Variables selected from 2015 analysis and LASSO: ', fac_key_vars , '\n')
+```
+
+```{r, eval=F }
+chk_id_vars <- c('age_at_indx', 'age_65', 'age_85', 'female', 
+                 'white', 'black', 'hispanic', 'asian', 
+                 'm3_adl', 'm3_CFS', 'm3_charlson', 'mds_resp', 
+                 'pcthmo', 'agghighcfs', 'obs_rehosprate', 'acuindex2', 'mds_hospptyr', 
+                 'fac_ls', 'M3K0510C2', 'mds_dem', 'dc_hosp_any',
+                 'M3B0100', 'paymcaid', 'rn2nrs', 'facpoor')
+chk_id_lbls <- c('Age at index', 'Age >=65 years', 'Age >=85 years*', 'Female*', 
+                 'White', 'Black' ,'Hispanic*', 'Asian*', 
+                 'ADL score*', 'CFS score*', 'Charlson score*', 'Resp. diagnosis', 
+                 'Facility % HMO', 'Agg. High CFS', 'Obs. Rehosp. rate', ' Acuity index',
+                 'MDS hosp. pt yr', 'Facility Long-stay census', 'Mech. Diet', 'Dementia diagnosis', 'Hosp. in season',
+                 'Comatose', '% Fac Medicaid', 'RN ratio', 'Poor resource facility')
+
+cat('Key individual or facility variables reported in checking balance: ', chk_id_vars , '\n')
+```
+
+
+```{r, eval=F }
+#Only for proportional variables, continuous measures dont have a percentage point diff
+pr_vars <- c('female', 'white', 'black', 'hispanic', 'asian', 'mds_resp',
+             'mds_dem', 'M3K0510C2', 'age_65', 'age_85')
+pr_var_lbls <- c('Female*', 'White', 'Black' ,'Hispanic*', 'Asian*',
+                 'Resp. diagnosis', 'Dementia diagnosis', 'Mech. Diet', 
+                 'Age >=65 years', 'Age >=85 years*')
+
+cat('Outlier definition, difference in standardized group means:', pr_reject, '\n')
+cat('Variables to test for outliers:', paste0(pr_vars, collapse=', '), '\n')
+```
+
+## Principal components  
+
+### Scale covariates  
+```{r, eval=F }
+df_prcomp <- df_cov %>%
+  select(-dc_hosp_any) %>%
+  distinct(.) 
+
+df_prcomp_scl <- df_prcomp %>%
+  select(-fac_id) %>%
+  map_dfr(., scale) 
+
+head(df_prcomp_scl)
+```
+
+### Compute PC  
+```{r, eval=F }
+pca_result <- prcomp(df_prcomp_scl, scale = TRUE)  
+
+summary(pca_result)
+```
+
+```{r, eval=F }
+e_values <- pca_result$sdev[pca_result$sdev>1] 
+
+# First for principal components
+df_decomp <- data.frame(pca_result$x) %>%
+  bind_cols(., df_prcomp) %>%
+  select('fac_id', paste0('PC', 1:length(e_values), sep='')) %>%
+  mutate_at(vars(-'fac_id'), scale)
+
+
+df_pca_weighted <- bind_cols(fac_id=df_decomp$fac_id, 
+                             x2=sweep(df_decomp[, 2:21], 2, e_values, "*")) 
+```
+
+# Functions for randomization  
+
+```{r, eval=F}
+pr_badrand <- function(x, cutoff, n) (sum(abs(x)>=cutoff)/n)*100
+
+do_rand <- function(iter_df) {
+   t_diff <- iter_df %>%
+      group_by(group) %>%
+      summarize_all(mean, na.rm=T) 
+    
+   #careful refers to global environ
+    t_diff <- unlist(t_diff[t_diff$group=='a', chk_id_vars] - t_diff[t_diff$group=='b', chk_id_vars])
+    return(t_diff)
+}
+```
+
+# Method 1. Simple Randomization  
+
+## Assign randomizations  
+
+```{r method 1, warning=F, eval=F}
+st_run <- Sys.time()
+
+## Random Assignment - Simple  
+
+df_m1 <- df_cov %>%
+  select(fac_id) %>%
+  distinct(.) %>%
+  pull(.)
+
+#Matrix of values  
+m1_res <- list()
+
+m1_res$delta <- matrix(NA, nrow = n_rndms, ncol = length(chk_id_vars)) %>%
+  as.data.frame(.)
+
+m1_res$stdev <- df_trial[, chk_id_vars] %>% 
+    map_dfr(., sd, na.rm=T) %>%
+    t(.)
+
+do_it <- function(x)  {
+  sim_iter <- rnd_allot(df_m1) %>%
+      as.data.frame(.) %>%
+      inner_join(df_trial[, c('fac_id', chk_id_vars)], ., by=c('fac_id'='id')) %>%
+      select(-fac_id)
+  
+  delta <- do_rand(sim_iter)
+  return(delta)
+}
+
+m1_res$delta[1L:n_rndms, ] <- t(sapply(1L:n_rndms, do_it))
+m1_res$smd <- t(apply(m1_res$delta[, 1:length(chk_id_vars)], 1, function(x) x / t(m1_res$stdev)))
+
+st_end <- Sys.time()
+
+cat(paste0(n_rndms), 'Randomizations for M1. Simple Random Assignment \n ')
+st_end - st_run
+```
+
+## Permute M1  
+
+```{r, message=F, warning=F, eval=F }
+st_run <- Sys.time()
+
+library(nloptr)
+library(lme4)
+
+m1_rtest <- vector(mode = 'double', length = n_permutes)
+
+for (i  in 1:n_permutes) {
+  facs <- rnd_allot(df_m1)
+
+  sim_1 <- df_trial %>%
+    select(fac_id, dc_hosp_any) %>%
+    inner_join(., facs, by=c('fac_id'='id')) %>%
+    mutate(assign = if_else(group=='a', 1L, 0L)) %>%
+    na.omit(.)
+  
+  iter <- glmer(dc_hosp_any ~ assign + (1 | fac_id), data = sim_1, 
+                      nAGQ=0, control=glmerControl(optimizer = "nloptwrap"), 
+                      family = 'binomial')
+  
+  m1_rtest[i] <- mean(coef(iter)$fac_id[['assign']])
+}
+
+
+st_end <- Sys.time()
+st_end - st_run
+```
+
+```{r, eval=F }
+save.image(file='flublok_pretrial_sims.RData')
+```
+
+# Method 2. Simple stratified randomization - Race, Size  
+
+## Assign Randomizations  
+
+```{r method 2, eval=F }
+st_run <- Sys.time()
+
+## 2 Stratum  
+  df_m2 <- df_trial %>%
+    distinct(fac_id, fac_black, fac_ls) %>%
+    mutate(cat_aa = ntile(fac_black, 5),
+           cat_fs = ntile(fac_ls, 5),
+           strata = interaction(cat_aa, cat_fs)) %>%
+    distinct(fac_id, cat_aa, cat_fs, strata)   
+
+#Matrix of values  
+m2_res <- list()
+
+m2_res$delta <- matrix(NA, nrow = n_rndms, ncol = length(chk_id_vars))  
+m2_res$stdev <- df_trial[, chk_id_vars] %>% 
+    map_dfr(., sd, na.rm=T) %>%
+    t(.)
+
+do_it <- function(x)  {
+  sim_iter <- rnd_str(df_m2, strata, fac_id) %>%
+    inner_join(df_trial[, c('fac_id', chk_id_vars)], ., by=c('fac_id')) %>%
+    select(group, chk_id_vars)
+  
+  delta <- do_rand(sim_iter)
+  return(delta)
+}
+
+m2_res$delta[1:n_rndms, ] <- t(sapply(1L:n_rndms, do_it))
+m2_res$smd <- t(apply(m2_res$delta, 1, function(x) x / t(m2_res$stdev)))
+
+st_end <- Sys.time()
+cat(paste0(n_rndms), 'Randomizations for M2. Stratified randomization, facility %AA and size quintiles \n ')
+st_end - st_run
+```
+
+## Permute M2  
+
+```{r, eval=F }
+st_run <- Sys.time()
+
+m2_rtest <- vector(mode = 'double', length = n_permutes)
+
+for (i  in 1:n_permutes) {
+  
+  facs <- rnd_str(df_m2, strata, fac_id)
+
+  sim_1 <- df_trial %>%
+    select(fac_id, dc_hosp_any) %>%
+    inner_join(., df_m2, by=c('fac_id'='fac_id')) %>%
+    inner_join(., facs, by=c('fac_id'='fac_id')) %>%
+    mutate(assign = if_else(group=='a', 1L, 0L)) %>%
+    na.omit(.)
+  
+  iter <- lme4::glmer(dc_hosp_any ~ assign + factor(cat_aa) + factor(cat_fs) + (1 | fac_id), 
+              nAGQ=0, control=glmerControl(optimizer = "nloptwrap"), 
+              data = sim_1, family = 'binomial')
+  
+  m2_rtest[i] <- mean(coef(iter)$fac_id[['assign']])
+}
+
+
+st_end <- Sys.time()
+st_end - st_run
+```
+
+```{r, eval=F }
+save.image(file='flublok_pretrial_sims.RData')
+```
+
+# Method 3. Pair-matched Randomization - Mahalanobis Distance  
+
+## Create Pair-Matches  
+
+```{r, warning=F, message=F, eval=F}
+library(nbpMatching)
+
+# create a covariate matrix
+  df_mtch <- df_trial %>%
+    select(fac_id, fac_key_vars) %>%
+    as.data.frame(.) %>%
+    distinct(.)
+
+# create distances
+  df_dist <- gendistance(df_mtch, idcol=1)
+
+# create distancematrix object
+  df_mdm <- distancematrix(df_dist)
+
+# create matches
+  df_mtch_2 <- nonbimatch(df_mdm)
+
+# review quality of matches
+  df_qom <- qom(df_dist$cov, df_mtch_2$matches)
+
+  df_mtch_3 <- df_mtch_2$matches %>%
+    select(Group1.ID, Group2.ID) %>%
+    mutate(class = row_number()) %>%
+    tidyr::pivot_longer(, cols = c('Group1.ID', 'Group2.ID'),
+                        values_to = 'fac_id') %>%
+    select(fac_id, class) %>%
+    arrange(fac_id) %>%
+    group_by(fac_id) %>%
+      slice(1) %>%
+    ungroup(.)
+    
+## Mahalanobis distane
+  df_m3 <- df_trial %>%
+    select(fac_id) %>%
+    inner_join(., df_mtch_3) %>%
+    distinct(.)
+
+  n_distinct(df_mtch_3$fac_id)
+```
+
+```{r method 3, eval=F }
+st_run <- Sys.time()
+
+#Matrix of values  
+m3_res <- list()
+
+m3_res$delta <- matrix(NA, nrow = n_rndms, ncol = length(chk_id_vars))  
+m3_res$stdev <- df_trial[, chk_id_vars] %>% 
+    map_dfr(., sd, na.rm=T) %>%
+    t(.)
+
+do_it <- function(x)  {
+  sim_iter <- rnd_str(df_m3, class, fac_id) %>%
+    inner_join(df_trial[, c('fac_id', chk_id_vars)], ., by=c('fac_id')) %>%
+    select(group, chk_id_vars)
+  
+  delta <- do_rand(sim_iter)
+  return(delta)
+}
+
+m3_res$delta[1:n_rndms, ] <- t(sapply(1L:n_rndms, do_it))
+m3_res$smd <- t(apply(m3_res$delta, 1, function(x) x / t(m3_res$stdev)))
+
+st_end <- Sys.time()
+cat(paste0(n_rndms), 'Randomizations for M3. Pair-Matched randomization, Key Variables \n ')
+st_end - st_run
+```
+
+## Permute M3  
+
+```{r, eval=F }
+st_run <- Sys.time()
+
+m3_rtest <- vector(mode = 'double', length = n_permutes)
+
+for (i  in 1:n_permutes) {
+  
+  facs <- rnd_str(df_m3, class, fac_id)
+
+  sim_1 <- df_trial %>%
+    select(fac_id, dc_hosp_any) %>%
+    inner_join(., facs, by=c('fac_id'='fac_id')) %>%
+    mutate(assign = if_else(group=='a', 1L, 0L)) %>%
+    na.omit(.)
+  
+  iter <- lme4::glmer(dc_hosp_any ~ assign + (1 | class) + (1 | fac_id), 
+                      nAGQ=0, control=glmerControl(optimizer = "nloptwrap"), 
+                      data = sim_1, family = 'binomial')
+  
+  m3_rtest[i] <- mean(coef(iter)$fac_id[['assign']])
+}
+
+
+st_end <- Sys.time()
+st_end - st_run
+```
+
+```{r, eval=F }
+save.image(file='flublok_pretrial_sims.RData')
+```
+
+# Method 4. K-means clustering, key variables  
+
+```{r method 4, eval=F }
+st_run <- Sys.time()
+
+#Matrix of values  
+df_km_1 <- df_trial %>%
+  select(fac_id, fac_key_vars) %>%
+  distinct(.) %>%
+  mutate_at(vars(fac_key_vars), scale)
+
+repeat {
+  df_km_2 <- df_km_1 %>%
+    select(-fac_id) %>%
+    as.matrix(.) %>%
+    kmeans(x=., centers = k_clust, nstart = k_starts, iter.max=k_iters)
+  
+  df_m4 <- bind_cols(fac_id  = df_km_1$fac_id,
+                         strata = df_km_2$cluster) %>%
+    distinct(.)
+    
+    if (min(table(df_m4$strata)) <= 2) {
+      break
+    }
+  k_clust <- k_clust + 1L
+}
+
+#Matrix of values  
+m4_res <- list()
+
+m4_res$delta <- matrix(NA, nrow = n_rndms, ncol = length(chk_id_vars))  
+m4_res$stdev <- df_trial[, chk_id_vars] %>% 
+    map_dfr(., sd, na.rm=T) %>%
+    t(.)
+
+do_it <- function(x)  {
+
+  sim_iter <- rnd_str(df_m4, strata, fac_id) %>%
+    inner_join(df_trial[, c('fac_id', chk_id_vars)], ., by=c('fac_id')) %>%
+    select(group, chk_id_vars)
+  
+  delta <- do_rand(sim_iter)
+  return(delta)
+}
+
+m4_res$delta[1:n_rndms, ] <- t(sapply(1:n_rndms, do_it))
+m4_res$smd <-t(apply(m4_res$delta, 1, function(x) x / t(m4_res$stdev)))
+
+st_end <- Sys.time()
+
+cat(paste0(n_rndms), 'Method 4. K-means clustering on key variables \n')
+st_end - st_run
+```
+
+## Permute M4  
+
+```{r, eval=F }
+st_run <- Sys.time()
+
+m4_rtest <- vector(mode = 'double', length = n_permutes)
+
+for (i  in 1:n_permutes) {
+  
+  facs <- rnd_str(df_m4, strata, fac_id)
+
+  sim_1 <- df_trial %>%
+    select(fac_id, dc_hosp_any) %>%
+    inner_join(., facs, by=c('fac_id'='fac_id')) %>%
+    mutate(assign = if_else(group=='a', 1L, 0L)) %>%
+    na.omit(.)
+  
+  iter <- lme4::glmer(dc_hosp_any ~ assign + (1 | strata) + (1 | fac_id), 
+                      nAGQ=0, control=glmerControl(optimizer = "nloptwrap"), 
+                      data = sim_1, family = 'binomial')
+  
+  m4_rtest[i] <- mean(coef(iter)$fac_id[['assign']])
+}
+
+
+st_end <- Sys.time()
+st_end - st_run
+```
+
+```{r }
+save.image(file='flublok_pretrial_sims.RData')
+```
+
+# Method 5. K-means, PCA cluster eigen-weighted  
+
+```{r method 5, eval=F }
+st_run <- Sys.time()
+
+#Matrix of values  
+df_pca_1 <- df_pca_weighted 
+
+repeat {
+  df_km_2 <- df_pca_1 %>%
+    select(-fac_id) %>%
+    as.matrix(.) %>%
+    kmeans(x=., centers = k_clust, nstart = k_starts, iter.max=k_iters)
+  
+  df_m5 <- bind_cols(fac_id  = df_pca_1$fac_id,
+                         strata = df_km_2$cluster) %>%
+    distinct(.)
+    
+    if (min(table(df_m5$strata)) <= 2) {
+      break
+    }
+  k_clust <- k_clust + 1L
+}
+
+#Matrix of values  
+m5_res <- list()
+
+m5_res$delta <- matrix(NA, nrow = n_rndms, ncol = length(chk_id_vars))  
+m5_res$stdev <- df_trial[, chk_id_vars] %>% 
+    map_dfr(., sd, na.rm=T) %>%
+    t(.)
+
+do_it <- function(x)  {
+
+  sim_iter <- rnd_str(df_m5, strata, fac_id) %>%
+    inner_join(df_trial[, c('fac_id', chk_id_vars)], ., by=c('fac_id')) %>%
+    select(group, chk_id_vars)
+  
+  delta <- do_rand(sim_iter)
+  return(delta)
+}
+
+m5_res$delta[1:n_rndms, ] <- t(sapply(1:n_rndms, do_it))
+m5_res$smd <-t(apply(m5_res$delta, 1, function(x) x / t(m5_res$stdev)))
+
+st_end <- Sys.time()
+
+cat(paste0(n_rndms), 'Method 5. K-means on PCA \n')
+st_end - st_run
+```
+
+## Permute M5  
+
+```{r, eval=F }
+st_run <- Sys.time()
+
+m5_rtest <- vector(mode = 'double', length = n_permutes)
+
+for (i  in 1:n_permutes) {
+  
+  facs <- rnd_str(df_m5, strata, fac_id)
+
+  sim_1 <- df_trial %>%
+    select(fac_id, dc_hosp_any) %>%
+    inner_join(., facs, by=c('fac_id'='fac_id')) %>%
+    mutate(assign = if_else(group=='a', 1L, 0L)) %>%
+    na.omit(.)
+  
+  iter <- lme4::glmer(dc_hosp_any ~ assign + (1 | strata) + (1 | fac_id), 
+                      nAGQ=0, control=glmerControl(optimizer = "nloptwrap"), 
+                      data = sim_1, family = 'binomial')
+  
+  m5_rtest[i] <- mean(coef(iter)$fac_id[['assign']])
+}
+
+
+st_end <- Sys.time()
+st_end - st_run
+```
+
+```{r, eval=F }
+save.image(file='flublok_pretrial_sims.RData')
+```
+
+# Method 6. Re-randomization  
+
+## Find Acceptable Cut-Off Value  
+```{r method 6, eval=F }
+st_run <- Sys.time()
+
+  df_rerand <- df_cov %>%
+    select(-dc_hosp_any) %>%
+    distinct(.) %>%
+    mutate_at(vars(-fac_id), scale)
+
+ # Find M-distance cutoff empirically   
+  do_it <- function(x) {
+
+    sim_iter <- rnd_allot(df_fac) %>%
+      as.data.frame(.) %>%
+      inner_join(df_rerand, ., by=c('fac_id'='id')) %>%
+      select(-fac_id) %>%
+      as.data.frame(.)
+
+    mdis_iter <- mahalanobis(colMeans(sim_iter[sim_iter$group=='a', fac_key_vars], na.rm=T), 
+                               colMeans(sim_iter[sim_iter$group=='b', fac_key_vars], na.rm=T), 
+                                  cov= cov(sim_iter[, fac_key_vars])) * 
+                   ((nrow(sim_iter[sim_iter$group=='a', ]) * nrow(sim_iter[sim_iter$group=='b', ])) / (nrow(sim_iter)))
+  }
+
+  m6_chk_mdis <- sapply(1:n_rndms, do_it)
+  
+  m6_cutoff <- quantile(m6_chk_mdis, 0.001)  
+  
+st_end <- Sys.time()
+
+cat('Method 6. Re-randomization cut-off', round(m6_cutoff, 3), ' \n')
+st_end - st_run
+```
+
+## Perform Re-randomizations  
+
+```{r, eval=F }
+st_run <- Sys.time()
+
+  m6_res <- list()
+  
+  m6_res$delta <- matrix(NA, nrow = n_re_rndms, ncol = length(chk_id_vars))  
+  m6_res$stdev <- df_trial[, chk_id_vars] %>% 
+      map_dfr(., sd, na.rm=T) %>%
+      t(.)
+
+  df_m6 <- df_trial %>%
+    select(fac_id, fac_key_vars) %>%
+    distinct()   
+  
+  do_it <- function(x)  {
+    repeat { # search for good rerand
+    
+      chk_rand <- rnd_allot(df_fac) %>%
+        inner_join(df_m6[, c('fac_id', fac_key_vars)], ., by=c('fac_id'='id')) 
+    
+      mdis_iter <- Rfast::mahala(colMeans(chk_rand[chk_rand$group=='a', fac_key_vars], na.rm=T), 
+                                 colMeans(chk_rand[chk_rand$group=='b', fac_key_vars], na.rm=T), 
+                                 sigma= cov(chk_rand[, fac_key_vars])) * 
+                       ((nrow(chk_rand[chk_rand$group=='a', ]) * nrow(chk_rand[chk_rand$group=='b', ])) / (nrow(chk_rand)))
+      
+      if(mdis_iter<m6_cutoff) {
+        break
+      }
+    }
+  
+  sim_iter <- inner_join(df_trial[, c('fac_id', chk_id_vars)], 
+                         chk_rand[, c('fac_id', 'group')], 
+                         by=c('fac_id')) %>%
+    select(group, chk_id_vars)
+  
+  delta <- do_rand(sim_iter)
+  return(delta)
+}
+
+m6_res$delta[1:n_rndms, ] <- t(sapply(1L:n_rndms, do_it))
+m6_res$smd <- t(apply(m6_res$delta, 1, function(x) x / t(m6_res$stdev)))
+
+st_end <- Sys.time()
+
+cat(paste0(n_rndms), 'Method 6. Re-randomizations, \n')
+st_end - st_run
+```
+
+## Permute M6  
+
+```{r, eval=F }
+st_run <- Sys.time()
+
+m6_rtest <- vector(mode = 'double', length = n_permutes)
+
+for (i  in 1:n_permutes) {
+  
+      repeat { # search for good rerand
+    
+      chk_rand <- rnd_allot(df_fac) %>%
+        inner_join(df_m6[, c('fac_id', fac_key_vars)], ., by=c('fac_id'='id')) 
+    
+      mdis_iter <- Rfast::mahala(colMeans(chk_rand[chk_rand$group=='a', fac_key_vars], na.rm=T), 
+                                 colMeans(chk_rand[chk_rand$group=='b', fac_key_vars], na.rm=T), 
+                                 sigma= cov(chk_rand[, fac_key_vars])) * 
+                       ((nrow(chk_rand[chk_rand$group=='a', ]) * nrow(chk_rand[chk_rand$group=='b', ])) / (nrow(chk_rand)))
+      
+      if(mdis_iter<m6_cutoff) {
+        break
+      }
+    }
+  
+  sim_1 <- df_trial %>%
+    select(fac_id, dc_hosp_any) %>%
+    inner_join(., chk_rand[, c('fac_id', 'group')], by=c('fac_id')) %>%
+    mutate(assign = if_else(group=='a', 1L, 0L)) %>%
+    na.omit(.)
+  
+  
+  iter <- lme4::glmer(dc_hosp_any ~ assign + (1 | fac_id), 
+                      nAGQ=0, control=glmerControl(optimizer = "nloptwrap"), 
+                      data = sim_1, family = 'binomial')
+  
+  m6_rtest[i] <- mean(coef(iter)$fac_id[['assign']])
+}
+
+
+st_end <- Sys.time()
+st_end - st_run
+```
+
+```{r, eval=F }
+save.image(file='flublok_pretrial_sims.RData')
+```
+
+# Evaluation of Methods  
+
+## Distribution of Variables  
+
+## Gather checking variables from Methods  
+
+```{r, eval=F }
+fct_lvls <- rndm_methods
+
+for (i in 1:6) { #loop to create smd objects
+  assign(paste0('m', i, '_diff'), get(paste0('m', i, '_res'))$delta %>%
+     as.data.frame(.) %>%
+    mutate(Method = fct_lvls[i]))
+}
+
+diff_all <- mget(ls()[str_detect(ls(), '_diff')]) #get all objects with '_diff' names
+
+diff_all <- bind_rows(diff_all) %>%
+  mutate(Method = factor(Method, levels= fct_lvls)) %>%
+  na.omit(.)
+
+colnames(diff_all) <- c(chk_id_vars, 'Method')
+
+diff_all_grp <- gather(diff_all, key = 'var', value = 'x', -Method) %>%
+  mutate(var = factor(var, levels=chk_id_vars, labels = chk_id_lbls))
+```
+
+## Compute range of values  
+
+```{r, eval=F }
+cats <- c(0.025, 0.25, 0.5, 0.75, 0.975)
+
+quant_vals <- function(x) {
+  y <- quantile(x, probs=cats)
+  return(y)
+}
+```
+
+```{r, message=F, warning=F, eval=F}
+
+cats_2 <- c(rep(cats[1], 6*length(chk_id_vars)), 
+          rep(cats[2], 6*length(chk_id_vars)), 
+          rep(cats[3], 6*length(chk_id_vars)), 
+          rep(cats[4], 6*length(chk_id_vars)), 
+          rep(cats[5], 6*length(chk_id_vars)))
+
+sum_diff_grp <- diff_all_grp %>%
+  split(., list(.$Method, .$var)) %>%
+  purrr::map(~quant_vals(.$x)) %>%
+  bind_rows(.) %>%
+  pivot_longer(., 
+               cols = everything(),
+               values_to = 'x') %>%
+  mutate(Quintile = cats_2) %>%
+  separate(., name, into = c('Method', 'var'), sep = "([\\.])") 
+```
+
+### Table of Quintiles  
+
+```{r, eval=F }
+
+tab_quint <- sum_diff_grp %>%
+  pivot_wider(., id_cols = c(Method, var), names_from = Quintile, values_from = x) %>%
+  select(var, everything()) 
+
+tab_quint[, 3:7] <- round(tab_quint[, 3:7], 3) 
+
+DT::datatable(tab_quint)
+```
+
+### Variables greater 0.2 SMD  
+
+```{r, eval=F }
+fct_lvls <- rndm_methods
+
+for (i in 1:6) { #loop to create smd objects
+  assign(paste0('m', i, '_smd'), get(paste0('m', i, '_res'))$smd %>%
+     as.data.frame(.) %>%
+    mutate(Method = fct_lvls[i]))
+}
+
+smd_all <- mget(ls()[str_detect(ls(), '_smd')]) #get all objects with '_smd' names
+
+smd_all <- bind_rows(smd_all) %>%
+  mutate(Method = factor(Method, levels= fct_lvls)) %>%
+  na.omit(.)
+
+colnames(smd_all) <- c(chk_id_vars, 'Method')
+
+smd_all_grp <- gather(smd_all, key = 'var', value = 'x', -Method) %>%
+  mutate(var = factor(var, levels=chk_id_vars, labels = chk_id_lbls))
+```
+
+#### Table % of variables with >0.2 SMD  
+
+```{r, eval=F }
+prop_outlier <- smd_all_grp %>%
+  mutate(out = if_else(abs(x)>0.2, 1L, 0L)) %>%
+  group_by(Method, var) %>%
+  summarize(pr_out = (sum(out) / n())*100) %>%
+  pivot_wider(., id_cols = c(var), names_from = Method, values_from = pr_out)
+
+DT::datatable(prop_outlier)
+```
+
+### Variance reduction  
+
+```{r, eval=F }
+var_all_grp <- diff_all_grp %>%
+  group_by(Method, var) %>%
+  summarize(variance = var(x)) %>%
+  pivot_wider(., id_cols = c(var), names_from = Method, values_from = variance)
+
+for (i in 3:7) {
+  var_all_grp[, i] <- (var_all_grp[, i] - var_all_grp[, 2]) / var_all_grp[, 2]
+}
+
+prvred <- var_all_grp[, -2] 
+
+prvred[nrow(prvred)+1, 2:6] <- colMeans(prvred[, 2:6])
+prvred[nrow(prvred)+1, 2:6] <- sapply(prvred[, 2:6], min)
+prvred[nrow(prvred)+1, 2:6] <- sapply(prvred[, 2:6], max)  
+
+DT::datatable(prvred) %>%
+  DT::formatRound(c(2:6), 3)
+```
+
+### Permutation Results  
+
+```{r, eval=F }
+for (i in 1:6) { #loop to create smd objects
+  assign(paste0('m', i, '_diff'), get(paste0('m', i, '_res'))$delta %>%
+     as.data.frame(.) %>%
+    mutate(Method = fct_lvls[i]))
+}
+
+rtest_all <- mget(ls()[str_detect(ls(), '_rtest')]) #get all objects with '_smd' names
+
+rtest_all <- bind_rows(rtest_all)
+colnames(rtest_all) <- fct_lvls 
+
+rtest_all_grp <- pivot_longer(rtest_all, cols = everything(), names_to = 'Method', values_to = 'x') %>%
+  arrange(Method) %>%
+  group_by(Method) %>%
+  summarize(lci = quantile(x, probs = c(0.025)),
+            uci = quantile(x, probs = c(0.975)))  
+
+DT::datatable(rtest_all_grp) %>%
+  DT::formatRound(c(2:6), 4)
+```
+
+```{r, eval=F }
+save.image(file='flublok_pretrial_sims.RData')
+```
